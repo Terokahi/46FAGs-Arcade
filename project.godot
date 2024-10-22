@@ -11,7 +11,12 @@ config_version=5
 [application]
 
 config/name="Arcade Game"
+run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
+
+[autoload]
+
+GlobConf="*res://Scripts/Globals/globConf.gd"
 
 [editor]
 
