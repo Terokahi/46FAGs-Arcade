@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake Game</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
+      const GAME_WIDTH = 400;
+      const GAME_HEIGHT = 400;
+      const GRID_SIZE = 20;
+      const TILE_WIDTH = GAME_WIDTH / GRID_SIZE;
+      const TILE_HEIGHT = GAME_HEIGHT / GRID_SIZE;
+
+      const DIRECTIONS = {
+        UP: [0, -1],
+        DOWN: [0, 1],
+        RIGHT: [1, 0],
+        LEFT: [-1, 0],
+      };
+
+      let direction = "UP";
+      let [vx, vy] = DIRECTIONS[direction];
+
+      class Snake {
+        constructor() {
+          this.body = [{ x: 10, y: 10 }];
+          this.nextHeadPosition = {
+            x: this.body[0].x + vx,
+            y: this.body[0].y + vy,
+          };
+        }
+
+        setNextHeadPosition(newPosition) {
+          this.nextHeadPosition = newPosition;
+        }
+      }
+
+      const snake = new Snake();
+      let foodPosition = {
+        x: Math.floor(Math.random() * (TILE_WIDTH - 1)),
+        y: Math.floor(Math.random() * (TILE_HEIGHT - 1)),
+      };
+
+      document.addEventListener("keydown", (event) => {
+        const key = event.key.toLowerCase();
+
+        switch (key) {
+          case "arrowup":
+          case "w":
+            if (direction !== "DOWN") direction = "UP";
+            break;
+          case "arrowdown":
+          case "s":
+            if (direction !== "UP") direction = "DOWN";
+            break;
+          case "arrowleft":
+          case "a":
+            if (direction !== "RIGHT") direction = "LEFT";
+            break;
+          case "arrowright":
+          case "d":
+            if (direction !== "LEFT") direction = "RIGHT";
+            break;
+        }
+
+        [vx, vy] = DIRECTIONS[direction];
+      });
+
+      function draw() {
+        const context = document.getElementById("gameCanvas").getContext("2d");
+
+        context.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+        snake.body.forEach((segment, index) => {
+          context.fillStyle = index === 0 ? "green" : "blue";
+          context.fillRect(
+            segment.x * TILE_WIDTH,
+            segment.y * TILE_HEIGHT,
+            TILE_WIDTH,
+            TILE_HEIGHT
+          );
+        });
+
+        context.fillStyle = "red";
+        context.fillRect(
+          foodPosition.x * TILE_WIDTH,
+          foodPosition.y * TILE_HEIGHT,
+          TILE_WIDTH,
+          TILE_HEIGHT
+        );
+      }
+
+      function update() {
+        if (
+          snake.body.some(
+            (segment) =>
+              segment.x === snake.nextHeadPosition.x &&
+              segment.y === snake.nextHeadPosition.y
+          )
+        ) {
+          alert("Game Over");
+          clearInterval(gameLoop);
+          return;
+        }
+
+        if (
+          snake.nextHeadPosition.x === foodPosition.x &&
+          snake.nextHeadPosition.y === foodPosition.y
+        ) {
+          foodPosition = {
+            x: Math.floor(Math.random() * (TILE_WIDTH - 1)),
+            y: Math.floor(Math.random() * (TILE_HEIGHT - 1)),
+          };
+        } else {
+          snake.body.pop();
+        }
+
+        snake.body.unshift(snake.nextHeadPosition);
+        snake.setNextHeadPosition({
+          x: (snake.body[0].x + vx + GRID_SIZE) % GRID_SIZE,
+          y: (snake.body[0].y + vy + GRID_SIZE) % GRID_SIZE,
+        });
+        draw();
+      }
+
+      let gameLoop = setInterval(update, 300);
+    </script>
+  </body>
+</html>
+
+
