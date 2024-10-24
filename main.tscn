@@ -53,5 +53,5 @@ text = "Delete!"
 
 [connection signal="pressed" from="Container/VBoxContainer/bStart" to="Container/VBoxContainer/bStart" method="start"]
 [connection signal="toggled" from="Container/VBoxContainer/bMode" to="Container/VBoxContainer/bMode" method="_on_toggled"]
-[connection signal="pressed" from="Container/VBoxContainer/bOptions" to="Container/VBoxContainer/bOptions" method="_on_pressed"]
 [connection signal="pressed" from="Container/VBoxContainer/bOptions" to="Container/VBoxContainer/bOptions" method="_change_opt"]
+[connection signal="pressed" from="Container/VBoxContainer/bOptions" to="Container/VBoxContainer/bOptions" method="_on_pressed"]
