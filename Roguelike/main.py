@@ -141,8 +141,8 @@ def gameloop():
     """
     # Set the maximum size of the game board
     print("Initializing the game board")
-    maxX = 53
-    maxY = 60
+    maxX = 45
+    maxY = 235
 
     # Set the number of rooms
     roomNbr = rnd.randint(1, 10)
