@@ -4,3 +4,5 @@ border empty malen ' ' #default same as delete draw border
 draw wall (nested for loops) # use ascii 
 wallCombiner(in: 3x3 array) # oob is '*' (test with exists?)  
      out: char
+
+work on dynamic display size
