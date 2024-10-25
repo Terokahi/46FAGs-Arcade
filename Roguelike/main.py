@@ -59,6 +59,25 @@ def placeRooms(maxX, maxY, roomNbr, playAr):
                 playAr[roomX + dx][roomY + dy] = room[dx][dy]
     
     # Place walls around the rooms
+    return placeBorders(playAr, maxX, maxY)
+
+def placeBorders(playAr, maxX, maxY):
+    """
+    Place border tiles around the game board.
+
+    Args:
+        maxX (int): The maximum x-coordinate of the game board.
+        maxY (int): The maximum y-coordinate of the game board.
+        playAr (list): The 2D list representing the game board.
+
+    Returns:
+        list: The updated game board with the border tiles placed.
+    """
+    for x in range(maxX):
+        for y in range(maxY):
+            if x == 0 or y == 0 or x == maxX - 1 or y == maxY - 1:
+                playAr[x][y] = ' '
+
     return placeWalls(playAr, maxX, maxY)
 
 def placeWalls(playAr, maxX, maxY):
@@ -74,14 +93,84 @@ def placeWalls(playAr, maxX, maxY):
         list: The game board with walls placed.
     """
     # wallTesterMatrix =[ [-1,-1],  [-1, 0],   [-1, +1], [0,-1],     [0,+1],     [+1,-1]  ,[+1, 0],    [+1,+1]]
-    # patent pending wall_combiner_3000_tm
-    # tryForWalls = 0;
-    # for i in wallTesterMatrix.length:
-    #  if playAr[wallTesterMatrix[i[0]]][wallTesterMatrix[i[1]]] == '*':
-    #   tryForWalls &= 1 << 7 - i
     # prüf ob um den Feld Sterne sind, Wo?
     # 0b00000000 = ' '
-    # 0b10000000 = '╝'
+    # 0b10000000 = '╝''╔'
+    # 0b01000000 = '═'
+    # 0b00100000 = '║'
+    # 0b00010000 = '╚'
+    # 0b00001000 = '╔'
+    # 0b00000100 = '╠''╝'
+    # 0b00000010 = '╦''╚'
+    # 0b00000001 = '╩'
+    # 0b11000000 = '╗'
+
+    # patent pending wall_combiner_3000_tm
+    wallTesterMatrix =[[-1,-1], [-1, 0], [-1, +1], [0,-1], [0,+1], [+1,-1], [+1, 0], [+1,+1]]
+    
+    for x in range(maxX):
+        for y in range(maxY):
+            tryForWalls = 0
+            for i in range(len(wallTesterMatrix)):
+                if x + wallTesterMatrix[i][0] < 0 or x + wallTesterMatrix[i][0] >= maxX or y + wallTesterMatrix[i][1] < 0 or y + wallTesterMatrix[i][1] >= maxY:
+                    tryForWalls |= 1 << 7 - i
+                elif playAr[x + wallTesterMatrix[i][0]][y + wallTesterMatrix[i][1]] == '*':
+                    tryForWalls |= 1 << 7 - i
+
+            if playAr[x][y] == ' ':
+                if (tryForWalls & 0b00000010):
+                    if (tryForWalls & 0b01000000):
+                        if (tryForWalls & 0b00010000):
+                            if (tryForWalls & 0b00001000):   
+                                playAr[x][y] = 'O'
+                            else:
+                                playAr[x][y] = '═'
+                        else:
+                            playAr[x][y] = '═'
+                    else:
+                        if (tryForWalls & 0b00010000):
+                            if (tryForWalls & 0b00001000):
+                                playAr[x][y] = '║'
+                            else:
+                                playAr[x][y] = '╚'
+                        else:
+                            if (tryForWalls & 0b00001000):
+                                playAr[x][y] = '╝'
+                            else:
+                                if (tryForWalls & 0b10000000)|(tryForWalls & 0b00100000):
+                                    playAr[x][y] = '╩'
+                                playAr[x][y] = '═'
+                else:
+                    if (tryForWalls & 0b01000000):
+                        if (tryForWalls & 0b00010000):
+                            if (tryForWalls & 0b00001000):   
+                                playAr[x][y] = '║'
+                            else:
+                                playAr[x][y] = '╔'
+                        else:
+                            if (tryForWalls & 0b00001000):
+                                playAr[x][y] = '╗'
+                            else:
+                                playAr[x][y] = '═'
+                    else:
+                        if (tryForWalls & 0b00010000):
+                            if (tryForWalls & 0b00001000):
+                                playAr[x][y] = '║'
+                            else:
+                                playAr[x][y] = '║'
+                        else:
+                            if (tryForWalls & 0b00001000):
+                                playAr[x][y] = '║'
+                            else:
+                                if (tryForWalls & 0b10000000):
+                                    playAr[x][y] = '╝'
+                                if (tryForWalls & 0b00100000):
+                                    playAr[x][y] = '╚'
+                                if (tryForWalls & 0b00000100):
+                                    playAr[x][y] = '╗'
+                                if (tryForWalls & 0b00000001):
+                                    playAr[x][y] = '╔'
+
     tempAr = playAr
     for x in range(maxX):
         for y in range(maxY):
@@ -141,8 +230,8 @@ def gameloop():
     """
     # Set the maximum size of the game board
     print("Initializing the game board")
-    maxX = 45
-    maxY = 235
+    maxX = 45 # height def 45
+    maxY = 235 # width def 235
 
     # Set the number of rooms
     roomNbr = rnd.randint(1, 10)
@@ -154,25 +243,7 @@ def gameloop():
     print(f"Game board size: {len(playAr)} x {len(playAr[0])}")
     playAr = placeRooms(maxX, maxY, roomNbr, playAr)
 
-    # Place outer walls
-    for x in range(maxX):
-        for y in range(maxY):
-            if x == 0:
-                playAr[x][y] = '═'
-            if y == 0:
-                playAr[x][y] = '║'
-            if x == maxX - 1:
-                playAr[x][y] = '═'
-            if y == maxY - 1:
-                playAr[x][y] = '║'
-            if x == 0 and y == 0:
-                playAr[x][y] = '╔'
-            if x == maxX - 1 and y == maxY - 1:
-                playAr[x][y] = '╝'
-            if x == 0 and y == maxY - 1:
-                playAr[x][y] = '╗'
-            if y == 0 and x == maxX - 1:
-                playAr[x][y] = '╚'
+    #playAr = placeBorders(playAr, maxX, maxY)
 
     # Print the game board
     print("Final game board:")
