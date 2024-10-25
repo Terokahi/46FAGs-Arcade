@@ -9,14 +9,15 @@ def create_room(width, height):
 def place_rooms(max_x, max_y, room_count, board):
     """Place random rooms on the board."""
     for _ in range(room_count):
-        min_size, max_size = 2, 6
-        room_x, room_y = rnd.randint(0, max_x - 21), rnd.randint(0, max_y - 21)
+        min_size, max_size = 2, 9
+        room_x, room_y = rnd.randint(0, max_x -1), rnd.randint(0, max_y -1)
         room_width, room_height = rnd.randint(min_size, max_size), rnd.randint(min_size, max_size)
         room = create_room(room_width, room_height)
 
         for x in range(room_width):
             for y in range(room_height):
-                board[room_x + x][room_y + y] = room[x][y]
+                if room_x + x < max_x and room_y + y < max_y:
+                    board[room_x + x][room_y + y] = room[x][y]
 
 
 def empty_borders(board, max_x, max_y):
@@ -110,7 +111,7 @@ def place_walls(board, max_x, max_y):
 def map_init():
     """Initialize the map."""
     max_x, max_y = 45, 235
-    room_count = rnd.randint(1, 400)
+    room_count = rnd.randint(20, 200)
     board = [[' '] * max_y for _ in range(max_x)]
 
     place_rooms(max_x, max_y, room_count, board)
