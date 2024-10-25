@@ -59,42 +59,59 @@ def fdup_magic(wall_byte):
         case 0: # all edges are open space
             # cornerSum == 0 would mean empty space (' ') but that is already the default
             if cornerSum == 1: # exactly one corner is a room tile
-                return { 
-                    south_west:'╗',
-                    south_east:'╔',
-                    north_west:'╝',
-                    north_east:'╚'
-                    }
+                if south_west:
+                    return '╗'
+                elif south_east:
+                    return '╔'
+                elif north_west:
+                    return '╝'
+                elif north_east:
+                    return'╚'
             elif cornerSum >= 2: # can find any of the missing border tiles with combinations of exactly 2 corners
-                return { 
+                
                 # two opposite corners make a cross
-                ((north_west & south_east) |
-                (north_east & south_west)):'╬',
+                if ((north_west & south_east) |
+                (north_east & south_west)):
+                    return '╬'
                 # north
-                north_west & north_east:'╩',
+                elif north_west & north_east:
+                    return '╩'
                 # south
-                south_west & south_east:'╦',
+                elif south_west & south_east:
+                    return '╦'
                 # west
-                north_west & south_west:'╣',
+                elif north_west & south_west:
+                    return '╣'
                 # east
-                north_east & south_east:'╠'
-                }
+                elif north_east & south_east:
+                    return '╠'
         case 4: # all edges are room tiles
             return 'O'
         case 3: # exactly three edges are room tiles
-            return '═' if (not (west & east)) else '║'
+             
+            if (not (west & east)):
+                return '═'
+            else:
+                return '║'
         case 2: # two or less sides open
-            return {
-            (not (north & south)):'║',
-            (not (west & east)):'═',
-            (not (north & west)):'╝',
-            (not (north & east)):'╚',
-            (not (south & west)):'╗',
-            (not (south & east)):'╔',
-            }
+            if (not (north & south)):
+                return '║'
+            elif (not (west & east)):
+                return '═'
+            elif (not (north & west)):
+                return '╝'
+            elif (not (north & east)):
+                return '╚'
+            elif (not (south & west)):
+                return '╗'
+            elif (not (south & east)):
+                return '╔'
         case 1: # one edge is a room tile
             if cornerSum == 0: # all corners are open space
-                return '║' if (not (north & south)) else '═'
+                if (not (north & south)):
+                    return '║'
+                else:
+                    return '═'
             elif cornerSum >= 1: # at least one corner is a room tile
                 if north:
                     if (south_east | south_west):
@@ -116,7 +133,7 @@ def fdup_magic(wall_byte):
                         return '╣'
                     else:
                         return '║'
-                        
+
 def place_walls(board, max_x, max_y):
     """Place walls around the rooms."""
     offset_matrix = [
@@ -136,8 +153,10 @@ def place_walls(board, max_x, max_y):
 
 
             if board[x][y] == ' ':
-                board[x][y] = fdup_magic(wall_byte)
-                
+                if fdup_magic(wall_byte) is not None:
+                    board[x][y] = fdup_magic(wall_byte)
+    
+    return board
 
 
 def map_init():
