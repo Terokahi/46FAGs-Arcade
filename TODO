@@ -5,4 +5,7 @@ draw wall (nested for loops) # use ascii
 wallCombiner(in: 3x3 array) # oob is '*' (test with exists?)  
      out: char
 
+draw rooms inside a pseudo game board bigger than the actual playable space in all four directions and remove everything outside afterwards,
+to get more rooms overlapping with the border
+
 work on dynamic display size
