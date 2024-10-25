@@ -124,49 +124,112 @@ def placeWalls(playAr, maxX, maxY):
             bottom_right = False
 
             for i in range(len(wallTesterMatrix)):
-                if (x + wallTesterMatrix[i][0] < 0 or x + wallTesterMatrix[i][0] >= maxX or y + wallTesterMatrix[i][1] < 0 or y + wallTesterMatrix[i][1] >= maxY) or playAr[x + wallTesterMatrix[i][0]][y + wallTesterMatrix[i][1]] == '*':
+                # Test Oob
+                if ((x + wallTesterMatrix[i][0] < 0 or x + wallTesterMatrix[i][0] >= maxX or y + wallTesterMatrix[i][1] < 0 or y + wallTesterMatrix[i][1] >= maxY) 
+                    # Test if already used
+                    or playAr[x + wallTesterMatrix[i][0]][y + wallTesterMatrix[i][1]] == '*'):
+                
                     match i:
                         case 0:
                             top_left = True
                         case 1:
                             top = True
+                            top_left = True
+                            top_right = True
                         case 2:
                             top_right = True
                         case 3:
                             left = True
+                            top_left = True
+                            bottom_left = True
                         case 4:
                             right = True
+                            top_right = True
+                            bottom_right = True
                         case 5:
                             bottom_left = True
                         case 6:
                             bottom = True
+                            bottom_left = True
+                            bottom_right = True
                         case 7:
                             bottom_right = True
+            edgeSum = top + bottom + left + right
+            cornerSum = top_left + top_right + bottom_left + bottom_right
 
             if playAr[x][y] == ' ':
-                if top and right and bottom and left:
-                    playAr[x][y] = 'O'
-                
-                # egde tests
-                elif top and right and bottom or top and left and bottom or top and bottom or top or bottom: 
-                    playAr[x][y] = '═'
-                elif top and right and left or bottom and right and left or right and left or right or left:
-                    playAr[x][y] = '║'
-                
-                # corner test
-                if top and right or bottom_left and not bottom and not left: 
-                    playAr[x][y] = '╗'
-                elif top and left or bottom_right and not bottom and not right:
-                    playAr[x][y] = '╔'
-                elif bottom and right or top_left and not top and not left:
-                    playAr[x][y] = '╝'
-                elif bottom and left and tryForWalls or top_right and not top and not right:
-                    playAr[x][y] = '╚'
-                
-                # "T" test
-                if top and bottom_left or top and bottom_right or top and bottom:
-                    playAr[x][y] = '╦'
+                # all four sides used
+                if (top and bottom and left and right):
+                    if (top_left and top_right and bottom_left and bottom_right):
+                        playAr[x][y] = "╬"
+                    else:
+                        playAr[x][y] = 'O'
+                # one side open
+                if (edgeSum == 3):
+                    if (not top):
+                        playAr[x][y] = '║'
+                    if (not bottom):
+                        playAr[x][y] = '║'
+                    if (not left):
+                        playAr[x][y] = '═'
+                    if (not right):
+                        playAr[x][y] = '═'
+                # two sides open
+                if (edgeSum == 2):
+                    if (not top and not bottom):
+                        playAr[x][y] = '║'
+                    if (not left and not right):
+                        playAr[x][y] = '═'
+                    if ( not top and not left):
+                        playAr[x][y] = '╝'
+                    if ( not top and not right):
+                        playAr[x][y] = '╚'
+                    if ( not bottom and not left):
+                        playAr[x][y] = '╗'
+                    if ( not bottom and not right):
+                        playAr[x][y] = '╔'
+                # three sides open
+                if (edgeSum == 1):
+                    if cornerSum >= 2 and edgeSum:
+                        if (top_left and bottom_right or
+                            top_right and bottom_left):
+                            playAr[x][y] = '╬'
+                        if top_left and top_right:
+                            playAr[x][y] = '╩'
+                        if bottom_left and bottom_right:
+                            playAr[x][y] = '╣'
+                        if top_left and bottom_left:
+                            playAr[x][y] = '╠'
+                        if top_right and bottom_right:
+                            playAr[x][y] = '╦'
+                    elif ((not top and not bottom and not left) ^ (not top and not bottom and not right)):
+                        playAr[x][y] = '║'
+                    elif ((not top and not left and not right) ^ (not bottom and not left and not right)):
+                        playAr[x][y] = '═'
 
+
+                if edgeSum == 0:
+                    if cornerSum == 1:
+                        if bottom_left:
+                            playAr[x][y] = '╗'
+                        if bottom_right:
+                            playAr[x][y] = '╔'
+                        if top_left:
+                            playAr[x][y] = '╝'
+                        if top_right:
+                            playAr[x][y] =  '╚'
+                    if cornerSum >= 2:
+                        if (top_left and bottom_right or
+                            top_right and bottom_left):
+                            playAr[x][y] = '╬'
+                        if top_left and top_right:
+                            playAr[x][y] = '╩'
+                        if bottom_left and bottom_right:
+                            playAr[x][y] = '╣'
+                        if top_left and bottom_left:
+                            playAr[x][y] = '╠'
+                        if top_right and bottom_right:
+                            playAr[x][y] = '╦'
     return playAr
 
 def checkWalls(playAr):
