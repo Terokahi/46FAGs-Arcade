@@ -1,8 +1,21 @@
+"""
+A simple text-based roguelike game.
+"""
+
 import random as rnd
 
 
 def create_room(width, height):
-    """Create a 2D list representation of a room."""
+    """
+    Create a 2D list representation of a room.
+
+    Args:
+        width (int): The width of the room.
+        height (int): The height of the room.
+
+    Returns:
+        list: A 2D list representing the room.
+    """
     room = [[' ' for _ in range(height)] for _ in range(width)]
 
     for x in range(width):
@@ -13,7 +26,15 @@ def create_room(width, height):
 
 
 def place_rooms(max_x, max_y, room_count, board):
-    """Place random rooms on the board."""
+    """
+    Place random rooms on the board.
+
+    Args:
+        max_x (int): The maximum x coordinate of the board.
+        max_y (int): The maximum y coordinate of the board.
+        room_count (int): The number of rooms to place.
+        board (list): The 2D list representing the board.
+    """
     for i in range(room_count):
         room_x = rnd.randint(0, max_x - 21)
         room_y = rnd.randint(0, max_y - 21)
@@ -29,7 +50,17 @@ def place_rooms(max_x, max_y, room_count, board):
 
 
 def empty_borders(board, max_x, max_y):
-    """Empty the border tiles around the board."""
+    """
+    Empty the border tiles around the board.
+
+    Args:
+        board (list): The 2D list representing the board.
+        max_x (int): The maximum x coordinate of the board.
+        max_y (int): The maximum y coordinate of the board.
+
+    Returns:
+        list: The modified board with empty borders.
+    """
     for x in range(max_x):
         for y in range(max_y):
             if x == 0 or y == 0 or x == max_x - 1 or y == max_y - 1:
@@ -37,8 +68,18 @@ def empty_borders(board, max_x, max_y):
 
     return place_walls(board, max_x, max_y)
 
+
 def fdup_magic(wall_byte):
-    #dictionary variables of directions
+    """
+    Determine the wall piece to place based on the wall byte.
+
+    Args:
+        wall_byte (int): The wall byte.
+
+    Returns:
+        str: The wall piece to place.
+    """
+    # dictionary variables of directions
     south_east = 1
     south = 2
     south_west = 4
@@ -48,17 +89,18 @@ def fdup_magic(wall_byte):
     north = 0x40
     north_west = 0x80
 
-    edgeSum = bin(wall_byte & (south | east | west | north)).count('1')
-    cornerSum = bin(wall_byte & (south_east | south_west | north_east | north_west)).count('1')
+    edge_sum = bin(wall_byte & (south | east | west | north)).count('1')
+    corner_sum = bin(wall_byte & (south_east | south_west | north_east | north_west)).count('1')
+
     # 4 3 0 are small
     # edgeSum 4? return 'O'
     # edgeSum 3? return '║' or '═'
     # edgeSum 0? return never any of the above
     # edgeSum >1? then >2? return tested for quality wallpiece
-    match edgeSum:
-        case 0: # all edges are open space
+    match edge_sum:
+        case 0:  # all edges are open space
             # cornerSum == 0 would mean empty space (' ') but that is already the default
-            if cornerSum == 1: # exactly one corner is a room tile
+            if corner_sum == 1:  # exactly one corner is a room tile
                 if south_west:
                     return '╗'
                 elif south_east:
@@ -66,12 +108,12 @@ def fdup_magic(wall_byte):
                 elif north_west:
                     return '╝'
                 elif north_east:
-                    return'╚'
-            elif cornerSum >= 2: # can find any of the missing border tiles with combinations of exactly 2 corners
-                
+                    return '╚'
+            elif corner_sum >= 2:  # can find any of the missing border tiles with combinations of exactly 2 corners
+
                 # two opposite corners make a cross
                 if ((north_west & south_east) |
-                (north_east & south_west)):
+                        (north_east & south_west)):
                     return '╬'
                 # north
                 elif north_west & north_east:
@@ -85,15 +127,15 @@ def fdup_magic(wall_byte):
                 # east
                 elif north_east & south_east:
                     return '╠'
-        case 4: # all edges are room tiles
+        case 4:  # all edges are room tiles
             return 'O'
-        case 3: # exactly three edges are room tiles
+        case 3:  # exactly three edges are room tiles
              
             if (not (west & east)):
                 return '═'
             else:
                 return '║'
-        case 2: # two or less sides open
+        case 2:  # two or less sides open
             if (not (north & south)):
                 return '║'
             elif (not (west & east)):
@@ -106,13 +148,13 @@ def fdup_magic(wall_byte):
                 return '╗'
             elif (not (south & east)):
                 return '╔'
-        case 1: # one edge is a room tile
-            if cornerSum == 0: # all corners are open space
+        case 1:  # one edge is a room tile
+            if corner_sum == 0:  # all corners are open space
                 if (not (north & south)):
                     return '║'
                 else:
                     return '═'
-            elif cornerSum >= 1: # at least one corner is a room tile
+            elif corner_sum >= 1:  # at least one corner is a room tile
                 if north:
                     if (south_east | south_west):
                         return '╦'
@@ -134,8 +176,19 @@ def fdup_magic(wall_byte):
                     else:
                         return '║'
 
+
 def place_walls(board, max_x, max_y):
-    """Place walls around the rooms."""
+    """
+    Place walls around the rooms.
+
+    Args:
+        board (list): The 2D list representing the board.
+        max_x (int): The maximum x coordinate of the board.
+        max_y (int): The maximum y coordinate of the board.
+
+    Returns:
+        list: The modified board with walls.
+    """
     offset_matrix = [
         [-1, -1], [-1, 0], [-1, 1],
         [ 0, -1],          [ 0, 1],
@@ -149,8 +202,6 @@ def place_walls(board, max_x, max_y):
                 nx, ny = x + offset[0], y + offset[1]
                 if (nx < 0 or nx >= max_x or ny < 0 or ny >= max_y or board[nx][ny] == '*'):
                     wall_byte |= (1 << (7 + i))
- 
-
 
             if board[x][y] == ' ':
                 if fdup_magic(wall_byte) is not None:
@@ -160,7 +211,9 @@ def place_walls(board, max_x, max_y):
 
 
 def map_init():
-    """Initialize the map."""
+    """
+    Initialize the map.
+    """
     max_x = 45
     max_y = 235
     room_count = rnd.randint(1, 10)
@@ -173,7 +226,9 @@ def map_init():
 
 
 def gameloop():
-    """Main function."""
+    """
+    Main function.
+    """
     board = map_init()
 
     for row in board:
@@ -182,3 +237,5 @@ def gameloop():
 
 if __name__ == "__main__":
     gameloop()
+
+
