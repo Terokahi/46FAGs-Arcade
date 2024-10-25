@@ -16,7 +16,7 @@ def place_rooms(max_x, max_y, room_count, board):
     """Place random rooms on the board."""
     for _ in range(room_count):
         min_size, max_size = 2, 6
-        room_x, room_y = rnd.randint(0, max_x - 21), rnd.randint(0, max_y - 21)
+        room_x, room_y = rnd.randint(0, max_x - 6), rnd.randint(0, max_y - 6)
         room_width, room_height = rnd.randint(min_size, max_size), rnd.randint(min_size, max_size)
         room = create_room(room_width, room_height)
 
