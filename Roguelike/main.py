@@ -6,6 +6,7 @@ Aliens
 Cosmic Rays
 and Puppys and kittens
 """
+
 def create_room(width, height):
     """Create a 2D list representation of a room."""
     return [['░'] * height for _ in range(width)]
@@ -14,8 +15,9 @@ def create_room(width, height):
 def place_rooms(max_x, max_y, room_count, board):
     """Place random rooms on the board."""
     for _ in range(room_count):
+        min_size, max_size = 2, 6
         room_x, room_y = rnd.randint(0, max_x - 21), rnd.randint(0, max_y - 21)
-        room_width, room_height = rnd.randint(4, 20), rnd.randint(4, 20)
+        room_width, room_height = rnd.randint(min_size, max_size), rnd.randint(min_size, max_size)
         room = create_room(room_width, room_height)
 
         for x in range(room_width):
@@ -58,7 +60,7 @@ def fdup_magic(dir_byte):
         return next(symbol for case, symbol in corner_edges if case)
     elif edge_sum == 1:
         if corner_sum == 0:
-            return '║' if (north | south) else '═'
+            return '═' if (north | south) else '║'
         elif corner_sum >= 1:
             t_edges = [
                 (north & (south_east | south_west), '╦'),
@@ -114,7 +116,7 @@ def place_walls(board, max_x, max_y):
 def map_init():
     """Initialize the map."""
     max_x, max_y = 45, 235
-    room_count = rnd.randint(1, 10)
+    room_count = rnd.randint(1, 400)
     board = [[' '] * max_y for _ in range(max_x)]
 
     place_rooms(max_x, max_y, room_count, board)
