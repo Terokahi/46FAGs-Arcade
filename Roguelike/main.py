@@ -59,9 +59,9 @@ def placeRooms(maxX, maxY, roomNbr, playAr):
                 playAr[roomX + dx][roomY + dy] = room[dx][dy]
     
     # Place walls around the rooms
-    return placeBorders(playAr, maxX, maxY)
+    return emptyBorders(playAr, maxX, maxY)
 
-def placeBorders(playAr, maxX, maxY):
+def emptyBorders(playAr, maxX, maxY):
     """
     Place border tiles around the game board.
 
@@ -108,108 +108,66 @@ def placeWalls(playAr, maxX, maxY):
     # patent pending wall_combiner_3000_tm
     wallTesterMatrix =[[-1,-1], [-1, 0], [-1, +1], [0,-1], [0,+1], [+1,-1], [+1, 0], [+1,+1]]
     
+
+
     for x in range(maxX):
         for y in range(maxY):
             tryForWalls = 0
+
+            top_left = False
+            top = False
+            top_right = False
+            left = False
+            right = False
+            bottom_left = False
+            bottom = False
+            bottom_right = False
+
             for i in range(len(wallTesterMatrix)):
-                if x + wallTesterMatrix[i][0] < 0 or x + wallTesterMatrix[i][0] >= maxX or y + wallTesterMatrix[i][1] < 0 or y + wallTesterMatrix[i][1] >= maxY:
-                    tryForWalls |= 1 << 7 - i
-                elif playAr[x + wallTesterMatrix[i][0]][y + wallTesterMatrix[i][1]] == '*':
-                    tryForWalls |= 1 << 7 - i
+                if (x + wallTesterMatrix[i][0] < 0 or x + wallTesterMatrix[i][0] >= maxX or y + wallTesterMatrix[i][1] < 0 or y + wallTesterMatrix[i][1] >= maxY) or playAr[x + wallTesterMatrix[i][0]][y + wallTesterMatrix[i][1]] == '*':
+                    match i:
+                        case 0:
+                            top_left = True
+                        case 1:
+                            top = True
+                        case 2:
+                            top_right = True
+                        case 3:
+                            left = True
+                        case 4:
+                            right = True
+                        case 5:
+                            bottom_left = True
+                        case 6:
+                            bottom = True
+                        case 7:
+                            bottom_right = True
 
             if playAr[x][y] == ' ':
-                if (tryForWalls & 0b00000010):
-                    if (tryForWalls & 0b01000000):
-                        if (tryForWalls & 0b00010000):
-                            if (tryForWalls & 0b00001000):   
-                                playAr[x][y] = 'O'
-                            else:
-                                playAr[x][y] = '═'
-                        else:
-                            playAr[x][y] = '═'
-                    else:
-                        if (tryForWalls & 0b00010000):
-                            if (tryForWalls & 0b00001000):
-                                playAr[x][y] = '║'
-                            else:
-                                playAr[x][y] = '╚'
-                        else:
-                            if (tryForWalls & 0b00001000):
-                                playAr[x][y] = '╝'
-                            else:
-                                if (tryForWalls & 0b10000000)|(tryForWalls & 0b00100000):
-                                    playAr[x][y] = '╩'
-                                playAr[x][y] = '═'
-                else:
-                    if (tryForWalls & 0b01000000):
-                        if (tryForWalls & 0b00010000):
-                            if (tryForWalls & 0b00001000):   
-                                playAr[x][y] = '║'
-                            else:
-                                playAr[x][y] = '╔'
-                        else:
-                            if (tryForWalls & 0b00001000):
-                                playAr[x][y] = '╗'
-                            else:
-                                playAr[x][y] = '═'
-                    else:
-                        if (tryForWalls & 0b00010000):
-                            if (tryForWalls & 0b00001000):
-                                playAr[x][y] = '║'
-                            else:
-                                playAr[x][y] = '║'
-                        else:
-                            if (tryForWalls & 0b00001000):
-                                playAr[x][y] = '║'
-                            else:
-                                if (tryForWalls & 0b10000000):
-                                    playAr[x][y] = '╝'
-                                if (tryForWalls & 0b00100000):
-                                    playAr[x][y] = '╚'
-                                if (tryForWalls & 0b00000100):
-                                    playAr[x][y] = '╗'
-                                if (tryForWalls & 0b00000001):
-                                    playAr[x][y] = '╔'
+                if top and right and bottom and left:
+                    playAr[x][y] = 'O'
+                
+                # egde tests
+                elif top and right and bottom or top and left and bottom or top and bottom or top or bottom: 
+                    playAr[x][y] = '═'
+                elif top and right and left or bottom and right and left or right and left or right or left:
+                    playAr[x][y] = '║'
+                
+                # corner test
+                if top and right or bottom_left and not bottom and not left: 
+                    playAr[x][y] = '╗'
+                elif top and left or bottom_right and not bottom and not right:
+                    playAr[x][y] = '╔'
+                elif bottom and right or top_left and not top and not left:
+                    playAr[x][y] = '╝'
+                elif bottom and left and tryForWalls or top_right and not top and not right:
+                    playAr[x][y] = '╚'
+                
+                # "T" test
+                if top and bottom_left or top and bottom_right or top and bottom:
+                    playAr[x][y] = '╦'
 
-    tempAr = playAr
-    for x in range(maxX):
-        for y in range(maxY):
-            # Determine if there are walls needed
-            south = False
-            north = False
-            west = False
-            east = False
-
-            # Place walls based on their direction
-            if south or north:
-                if east or west:
-                    if south and east:
-                        tempAr[x + 1][y + 1] = '╝'
-                        tempAr[x + 1][y] = '═'
-                        tempAr[x][y + 1] = '║'
-                    elif south and west:
-                        tempAr[x - 1][y + 1] = '╗'
-                        tempAr[x - 1][y] = '═'
-                        tempAr[x][y + 1] = '║'
-                    elif north and east:
-                        tempAr[x + 1][y - 1] = '╚'
-                        tempAr[x + 1][y] = '═'
-                        tempAr[x][y - 1] = '║'
-                    elif north and west:
-                        tempAr[x - 1][y - 1] = '╔'
-                        tempAr[x - 1][y] = '═'
-                        tempAr[x][y - 1] = '║'
-                else:
-                    if south:
-                        tempAr[x][y + 1] = '║'
-                    elif north:
-                        tempAr[x][y - 1] = '║'
-            else:
-                if east:
-                    tempAr[x + 1][y] = '═'
-                elif west:
-                    tempAr[x - 1][y] = '═'
-    return tempAr
+    return playAr
 
 def checkWalls(playAr):
     """
@@ -242,8 +200,6 @@ def gameloop():
 
     print(f"Game board size: {len(playAr)} x {len(playAr[0])}")
     playAr = placeRooms(maxX, maxY, roomNbr, playAr)
-
-    #playAr = placeBorders(playAr, maxX, maxY)
 
     # Print the game board
     print("Final game board:")
