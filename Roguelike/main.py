@@ -1,214 +1,184 @@
 import random as rnd
 
-def createRoom(x, y):
-    """
-    Create a 2D list representation of a room.
 
-    Args:
-        x (int): The width of the room.
-        y (int): The height of the room.
+def create_room(width, height):
+    """Create a 2D list representation of a room."""
+    room = [[' ' for _ in range(height)] for _ in range(width)]
 
-    Returns:
-        list: A 2D list representing the room.
-    """
-    print(f"Creating a room with width {x} and height {y}")
-    # Initialize a 2D list to represent the room
-    room = [[' ' for _ in range(y)] for _ in range(x)]
+    for x in range(width):
+        for y in range(height):
+            room[x][y] = '*'
 
-    # Fill the room with floor tiles
-    for dx in range(x):
-        for dy in range(y):
-            room[dx][dy] = '*'
-    
-    print("Room created:")
-    for row in room:
-        print(''.join(row))
     return room
 
-def placeRooms(maxX, maxY, roomNbr, playAr):
-    """
-    Place random rooms on the game board.
 
-    Args:
-        maxX (int): The maximum x-coordinate of the game board.
-        maxY (int): The maximum y-coordinate of the game board.
-        roomNbr (int): The number of rooms to place.
-        playAr (list): The 2D list representing the game board.
+def place_rooms(max_x, max_y, room_count, board):
+    """Place random rooms on the board."""
+    for i in range(room_count):
+        room_x = rnd.randint(0, max_x - 21)
+        room_y = rnd.randint(0, max_y - 21)
 
-    Returns:
-        list: The updated game board with the rooms placed.
-    """
-    for i in range(roomNbr):
-        # Randomly determine the position of the room
-        roomX = rnd.randint(0, maxX - 21)
-        roomY = rnd.randint(0, maxY - 21)
-        print(f"Placing room {i+1} at position ({roomX}, {roomY})")
+        room_width = rnd.randint(4, 20)
+        room_height = rnd.randint(4, 20)
 
-        # Randomly determine the size of the room
-        x = rnd.randint(4, 20)
-        y = rnd.randint(4, 20)
-        print(f"Room size (width x height): ({x} x {y})")
+        room = create_room(room_width, room_height)
 
-        # Create the room
-        room = createRoom(x, y)
-        print(f"Room creation completed at position ({roomX}, {roomY})")
-
-        # Place the room on the game board
-        for dx in range(x):
-            for dy in range(y):
-                playAr[roomX + dx][roomY + dy] = room[dx][dy]
-    
-    # Place walls around the rooms
-    return emptyBorders(playAr, maxX, maxY)
-
-def emptyBorders(playAr, maxX, maxY):
-    """
-    Place border tiles around the game board.
-
-    Args:
-        maxX (int): The maximum x-coordinate of the game board.
-        maxY (int): The maximum y-coordinate of the game board.
-        playAr (list): The 2D list representing the game board.
-
-    Returns:
-        list: The updated game board with the border tiles placed.
-    """
-    for x in range(maxX):
-        for y in range(maxY):
-            if x == 0 or y == 0 or x == maxX - 1 or y == maxY - 1:
-                playAr[x][y] = ' '
-
-    return placeWalls(playAr, maxX, maxY)
-
-def placeWalls(playAr, maxX, maxY):
-    """
-    Place walls around the rooms.
-
-    Args:
-        playAr (list): The 2D list representing the game board.
-        maxX (int): The maximum x-coordinate of the game board.
-        maxY (int): The maximum y-coordinate of the game board.
-
-    Returns:
-        list: The game board with walls placed.
-    """
-    # wallTesterMatrix =[ [-1,-1],  [-1, 0],   [-1, +1], [0,-1],     [0,+1],     [+1,-1]  ,[+1, 0],    [+1,+1]]
-
-    # patent pending wall_combiner_3000_tm
-    wallTesterMatrix =[[-1,-1], [-1, 0], [-1, +1], [0,-1], [0,+1], [+1,-1], [+1, 0], [+1,+1]]
-    
+        for x in range(room_width):
+            for y in range(room_height):
+                board[room_x + x][room_y + y] = room[x][y]
 
 
-    for x in range(maxX):
-        for y in range(maxY):
-            tryForWalls = 0
+def empty_borders(board, max_x, max_y):
+    """Empty the border tiles around the board."""
+    for x in range(max_x):
+        for y in range(max_y):
+            if x == 0 or y == 0 or x == max_x - 1 or y == max_y - 1:
+                board[x][y] = ' '
 
-            top_left = False
-            top = False
-            top_right = False
-            left = False
-            right = False
-            bottom_left = False
-            bottom = False
-            bottom_right = False
+    return place_walls(board, max_x, max_y)
 
-            for i in range(len(wallTesterMatrix)):
-                # Test Oob
-                if ((x + wallTesterMatrix[i][0] < 0 or x + wallTesterMatrix[i][0] >= maxX or y + wallTesterMatrix[i][1] < 0 or y + wallTesterMatrix[i][1] >= maxY) 
-                    # Test if already used
-                    or playAr[x + wallTesterMatrix[i][0]][y + wallTesterMatrix[i][1]] == '*'):
+def fdup_magic(wall_byte):
+    #dictionary variables of directions
+    south_east = 1
+    south = 2
+    south_west = 4
+    east = 8
+    west = 0x10
+    north_east = 0x20
+    north = 0x40
+    north_west = 0x80
+
+    edgeSum = bin(wall_byte & (south | east | west | north)).count('1')
+    cornerSum = bin(wall_byte & (south_east | south_west | north_east | north_west)).count('1')
+    # 4 3 0 are small
+    # edgeSum 4? return 'O'
+    # edgeSum 3? return '║' or '═'
+    # edgeSum 0? return never any of the above
+    # edgeSum >1? then >2? return tested for quality wallpiece
+    match edgeSum:
+        case 0: # all edges are open space
+            # cornerSum == 0 would mean empty space (' ') but that is already the default
+            if cornerSum == 1: # exactly one corner is a room tile
+                if south_west:
+                    return '╗'
+                elif south_east:
+                    return '╔'
+                elif north_west:
+                    return '╝'
+                elif north_east:
+                    return'╚'
+            elif cornerSum >= 2: # can find any of the missing border tiles with combinations of exactly 2 corners
                 
-                    match i:
-                        case 0:
-                            top_left = True
-                        case 1:
-                            top = True
-                            top_left = True
-                            top_right = True
-                        case 2:
-                            top_right = True
-                        case 3:
-                            left = True
-                            top_left = True
-                            bottom_left = True
-                        case 4:
-                            right = True
-                            top_right = True
-                            bottom_right = True
-                        case 5:
-                            bottom_left = True
-                        case 6:
-                            bottom = True
-                            bottom_left = True
-                            bottom_right = True
-                        case 7:
-                            bottom_right = True
-            edgeSum = top + bottom + left + right
-            cornerSum = top_left + top_right + bottom_left + bottom_right
+                # two opposite corners make a cross
+                if ((north_west & south_east) |
+                (north_east & south_west)):
+                    return '╬'
+                # north
+                elif north_west & north_east:
+                    return '╩'
+                # south
+                elif south_west & south_east:
+                    return '╦'
+                # west
+                elif north_west & south_west:
+                    return '╣'
+                # east
+                elif north_east & south_east:
+                    return '╠'
+        case 4: # all edges are room tiles
+            return 'O'
+        case 3: # exactly three edges are room tiles
+             
+            if (not (west & east)):
+                return '═'
+            else:
+                return '║'
+        case 2: # two or less sides open
+            if (not (north & south)):
+                return '║'
+            elif (not (west & east)):
+                return '═'
+            elif (not (north & west)):
+                return '╝'
+            elif (not (north & east)):
+                return '╚'
+            elif (not (south & west)):
+                return '╗'
+            elif (not (south & east)):
+                return '╔'
+        case 1: # one edge is a room tile
+            if cornerSum == 0: # all corners are open space
+                if (not (north & south)):
+                    return '║'
+                else:
+                    return '═'
+            elif cornerSum >= 1: # at least one corner is a room tile
+                if north:
+                    if (south_east | south_west):
+                        return '╦'
+                    else:
+                        return '═'
+                if south:
+                    if (north_west | north_east):
+                        return '╩'
+                    else:
+                        return '═'
+                if west:
+                    if (north_east | south_east):
+                        return '╠'
+                    else:
+                        return '║'
+                if east:
+                    if (north_west | south_west):
+                        return '╣'
+                    else:
+                        return '║'
 
-            if playAr[x][y] == ' ':
-                # all four sides used
-                match edgeSum:
-                    case 0: # no sides closed
-                    case 1: # one side closed
-                        if (cornerSum == 0):
-                            if (not top or not bottom):
-                                playAr[x][y] = '═'
-                            if (not left or not right):
-                                playAr[x][y] = '║'
-                        if (cornerSum == 1):
-                            if (not top_left)
-                        if (cornerSum == 2):
-                        
-                        if (cornerSum == 3):
-                        
-                        if (cornerSum == 4):
-                            
-                    case 2: # two sides closed
-                    case 3: # three sides closed
-                    case 4: # all sides closed
+def place_walls(board, max_x, max_y):
+    """Place walls around the rooms."""
+    offset_matrix = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [ 0, -1],          [ 0, 1],
+        [ 1, -1], [ 1, 0], [ 1, 1]
+    ]
+
+    for x in range(max_x):
+        for y in range(max_y):
+            wall_byte = 0
+            for i, offset in enumerate(offset_matrix):
+                nx, ny = x + offset[0], y + offset[1]
+                if (nx < 0 or nx >= max_x or ny < 0 or ny >= max_y or board[nx][ny] == '*'):
+                    wall_byte |= (1 << (7 + i))
+ 
 
 
+            if board[x][y] == ' ':
+                if fdup_magic(wall_byte) is not None:
+                    board[x][y] = fdup_magic(wall_byte)
+    
+    return board
 
-    return playAr
 
-def checkWalls(playAr):
-    """
-    Placeholder function for checking walls.
+def map_init():
+    """Initialize the map."""
+    max_x = 45
+    max_y = 235
+    room_count = rnd.randint(1, 10)
 
-    Args:
-        playAr (list): The 2D list representing the game board.
-    """
-    pass
+    board = [[' ' for _ in range(max_y)] for _ in range(max_x)]
+
+    place_rooms(max_x, max_y, room_count, board)
+
+    return empty_borders(board, max_x, max_y)
+
 
 def gameloop():
-    """
-    The main game loop.
+    """Main function."""
+    board = map_init()
 
-    This function creates a game board, places
-    random rooms on it, and prints the final
-    game board.
-    """
-    # Set the maximum size of the game board
-    print("Initializing the game board")
-    maxX = 45 # height def 45
-    maxY = 235 # width def 235
-
-    # Set the number of rooms
-    roomNbr = rnd.randint(1, 10)
-    print(f"Number of rooms to create: {roomNbr}")
-
-    # Create a 2D list to represent the game board
-    playAr = [[' ' for _ in range(maxY)] for _ in range(maxX)]
-
-    print(f"Game board size: {len(playAr)} x {len(playAr[0])}")
-    playAr = placeRooms(maxX, maxY, roomNbr, playAr)
-
-    # Print the game board
-    print("Final game board:")
-    for row in playAr:
+    for row in board:
         print(''.join(row))
 
-# Call the game loop
-gameloop()
 
+if __name__ == "__main__":
+    gameloop()
