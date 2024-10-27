@@ -115,7 +115,7 @@ def place_walls(board, max_x, max_y):
 
 def map_init():
     """Initialize the map."""
-    max_x, max_y = 45, 235
+    max_x, max_y = 48, 235
     room_count = rnd.randint(1, 400)
     board = [[' '] * max_y for _ in range(max_x)]
 

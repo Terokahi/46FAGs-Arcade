@@ -1,51 +1,27 @@
-import RoomGen.main as RoomGen
+import roomGen
 import char
 
 def gameloop(board, player): 
     while True:
-        movement = input()
-        if (movement == 'w' or
-            movement == 'a' or
-            movement == 'x' or
-            movement == 'd' or
-            movement == 'q' or
-            movement == 'e' or
-            movement == 'y' or
-            movement == 'c'):
-            board[player.x][player.y] = '░'
-            if movement == 'w':
-                player.x -= 1
-            elif movement == 'a':
-                player.y -= 1
-            elif movement == 'x':
-                player.x += 1
-            elif movement == 'd':
-                player.y += 1
-            elif movement == 'q':
-                player.x -= 1
-                player.y -= 1
-            elif movement == 'e':
-                player.x -= 1
-                player.y += 1
-            elif movement == 'y':
-                player.x += 1
-                player.y -= 1
-            elif movement == 'c':
-                player.x += 1
-                player.y += 1
+        x, y = char.move()
+        if board[player.x + x][player.y + y] != '░':
+            x,y = 0, 0
+        board[player.x][player.y] = '░'
+        player.x += x
+        player.y += y
         board[player.x][player.y] = player.char
-        RoomGen.prntMap(board)
+        roomGen.prntMap(board)
 
 def main():
     """Main function."""
     player = char.pc()
-    test = RoomGen.main()
-    while test[player.x][player.y] != '░':
+    map = roomGen.main()
+    while map[player.x][player.y] != '░':
         player.reset()
-    test[player.x][player.y] = player.char
-    RoomGen.prntMap(test)
+    map[player.x][player.y] = player.char
+    roomGen.prntMap(map)
     
-    gameloop(test,player)
+    gameloop(map,player)
 
     
 
