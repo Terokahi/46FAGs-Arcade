@@ -2,9 +2,18 @@ Add Materials
 Add Fog of War
 add Z variable for map and entitys
 add dynamic display size
+add "specialRoom"
+
+overlays
+ores, special rooms, player, mobs, map, biomes (trees, water, cave, cavern)
 
 caveins happen randomly, cealing next to wall has chance of 0,01 and one ex.:100 Tiles away has 100 chance to cavein
 procedural generated Mineshafts, Forest, Caverns
+
+Special Rooms
+     Special rooms can always spawn
+     if it's the right biome higher spawn chance
+          eg.: Abandoned Fortress primarily in cavern but can spawn in simple caves
 
 add entitys 
      keep knowledge even on sickness and injury, even if stats are too low to use it
@@ -19,8 +28,7 @@ add Crafting
 
 add different Biomes
      cavern
-     floating island caverns
-     fortress cavern     
+     floating island caverns  
      cave
      abandoned city
      forests (Ffaeble has something planned)
