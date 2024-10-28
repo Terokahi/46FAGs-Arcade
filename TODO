@@ -4,6 +4,9 @@ add Z variable for map and entitys
 add dynamic display size
 add "specialRoom"
 
+priority for buildings
+ores > Biomes > Special Rooms > Mineshafts > empty rooms > player > mobs # worked on by Terokahi
+
 overlays
 ores, special rooms, player, mobs, map, biomes (trees, water, cave, cavern)
 
