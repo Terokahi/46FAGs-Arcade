@@ -16,6 +16,7 @@ def main():
     """Main function."""
     player = char.pc()
     map = roomGen.main()
+    
     while map[player.x][player.y] != '░':
         player.reset()
     map[player.x][player.y] = player.char

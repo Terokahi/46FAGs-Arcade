@@ -3,6 +3,7 @@ Add Fog of War
 add Z variable for map and entitys
 add dynamic display size
 
+caveins happen randomly, cealing next to wall has chance of 0,01 and one ex.:100 Tiles away has 100 chance to cavein
 procedural generated Mineshafts, Forest, Caverns
 
 add entitys 

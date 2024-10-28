@@ -6,8 +6,6 @@ class pc:
         self.y = rng.randint(0, 234)
         self.char = '@'
 
-    def __str__ (self):
-        return self.char
     
     def reset(self):
         self.x = rng.randint(0, 44)
