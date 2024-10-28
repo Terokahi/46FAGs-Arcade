@@ -130,8 +130,3 @@ def main():
     """Main function."""
     board = map_init()
     return(board)
-
-
-
-if __name__ == "__main__":
-    main()
