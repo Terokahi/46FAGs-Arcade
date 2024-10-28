@@ -1,0 +1,67 @@
+Add Materials
+Add Fog of War
+add Z variable for map and entitys
+add dynamic display size
+add "specialRoom"
+
+overlays
+ores, special rooms, player, mobs, map, biomes (trees, water, cave, cavern)
+
+caveins happen randomly, cealing next to wall has chance of 0,01 and one ex.:100 Tiles away has 100 chance to cavein
+procedural generated Mineshafts, Forest, Caverns
+
+Special Rooms
+     Special rooms can always spawn
+     if it's the right biome higher spawn chance
+          eg.: Abandoned Fortress primarily in cavern but can spawn in simple caves
+
+add entitys 
+     keep knowledge even on sickness and injury, even if stats are too low to use it
+     Entitys need food, drink, sleep for basic survival
+     Entitys can share survival skills with others (random chance)
+     Animals might randomly fall down holes from the surface and survive
+
+add Crafting
+     (implement later)
+     Race dependendency
+     Talent dependency
+
+add different Biomes
+     cavern
+     floating island caverns  
+     cave
+     abandoned city
+     forests (Ffaeble has something planned)
+
+Different Races different versions of government
+     Tech tree
+          (implement later)
+          Race Dependency
+          entity Dependency (Unit dies technology lost)
+          
+     different Units
+          early Smart orcs get abused by others
+               (not able to turn into shaman)
+          
+          theoretical knowledge get's turned into practical knowledge
+               A mage can't immediately cast fireball after learning it, but mistakes might lead to new knowledge
+
+          to upgrade melee units weapon wielding lvl. and footwork lvl. must be appropriate
+          
+          different units need different stats, a entity needs to know strategy to be turned into a marshall
+
+     civil wars
+          not enough food
+          not enough religious worship
+          not enough enjoyment
+          too many slums.
+          Race acceptance too low     
+     
+     different Races different do's and can'ts eg.:
+          Dwarves good with runes, can't use magic
+          Elves good with magic can't eat or prepare meat, low str?
+
+different Gods like different buildings and behaviour
+     Gods get story and lore
+     entitys and units can be called upon by a god or used as a vessel
+          depending on god good or bad
