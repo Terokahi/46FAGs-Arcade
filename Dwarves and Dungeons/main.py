@@ -10,7 +10,6 @@ def gameloop(board, player):
         player.x += x
         player.y += y
         board[player.x][player.y] = player.char
-        roomGen.prntMap(board)
 
 def main():
     """Main function."""

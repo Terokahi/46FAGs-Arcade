@@ -1,0 +1,32 @@
+redFG = "\033[160m"
+reset = "\033[0m"
+
+start point (x,y) -> random direction
+place ores based on x(20) * y(20) / 100 * maxStone(50) = 200
+perc ores = iron + bronze + silver + [...] * 10 = 1000
+iron perc = perc ores(1000) / iron (100) = 10
+
+
+
+for each in oresDict
+    each.perc = per ores / each
+
+for each in oresDict
+    amount = place ores(200) / each(iron) (10) = 20
+    x = rnd.randint(0, 20)
+    y = rnd.randint(0, 20)
+    while amount > 0
+        if map[x][y] == ' ':
+            map[x][y] = redFG + '*' + reset     # color iron
+            amount--
+        
+        x += rnd.randint(-1,1)
+        y += rnd.randint(-1,1)
+        flag = rnd.randint(-20, 1)
+        if flag < 0:
+            flag = 0
+
+        if flag:
+            x = rnd.randint(0,20)
+            y = rnd.randint(0,20)
+            continue

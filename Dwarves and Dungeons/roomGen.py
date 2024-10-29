@@ -1,4 +1,5 @@
-import random as rnd
+import random as rng
+from Testing.oreGen import oreMap
 """
 Code may or may not have been influenced by:
 Divine intervention
@@ -16,8 +17,8 @@ def place_rooms(max_x, max_y, room_count, board):
     """Place random rooms on the board."""
     for _ in range(room_count):
         min_size, max_size = 2, 6
-        room_x, room_y = rnd.randint(0, max_x - 1), rnd.randint(0, max_y - 1)
-        room_width, room_height = rnd.randint(min_size, max_size), rnd.randint(min_size, max_size)
+        room_x, room_y = rng.randint(0, max_x - 1), rng.randint(0, max_y - 1)
+        room_width, room_height = rng.randint(min_size, max_size), rng.randint(min_size, max_size)
         room = create_room(room_width, room_height)
         for x in range(room_width):
             for y in range(room_height):
@@ -28,9 +29,9 @@ def place_rooms(max_x, max_y, room_count, board):
 def empty_borders(board, max_x, max_y):
     """Empty the border tiles around the board."""
     for x in range(max_x):
-        board[x][0] = board[x][max_y - 1] = ' '
+        board[x][0] = board[x][max_y - 1] = '▓'
     for y in range(max_y):
-        board[0][y] = board[max_x - 1][y] = ' '
+        board[0][y] = board[max_x - 1][y] = '▓'
     return place_walls(board, max_x, max_y)
 
 
@@ -107,7 +108,7 @@ def place_walls(board, max_x, max_y):
                 ):
                     dir_byte |= (1 << (7 - i))
 
-            if board[x][y] == ' ' and dir_byte:
+            if board[x][y] == '▓' and dir_byte:
                 board[x][y] = fdup_magic(dir_byte)
 
     return board
@@ -116,15 +117,27 @@ def place_walls(board, max_x, max_y):
 def map_init():
     """Initialize the map."""
     max_x, max_y = 48, 235
-    room_count = rnd.randint(1, 400)
-    board = [[' '] * max_y for _ in range(max_x)]
+    room_count = rng.randint(1, 400)
+    board = [['▓'] * max_y for _ in range(max_x)]
 
     place_rooms(max_x, max_y, room_count, board)
     return empty_borders(board, max_x, max_y)
 
 def prntMap (board):
+    reset = "\033[0m"
+    oreMapD = oreMap(48, 235)
+    for x in range(48):
+        for y in range(235):
+            board[x][y] = oreMapD[x][y] + board[x][y] + reset 
     for row in board:
         print(''.join(row))
+
+def resetprint():
+    lines = 48
+    print("\33[F"*lines, end='')
+    for i in range(lines):
+        print()
+          
 
 def main():
     """Main function."""
