@@ -54,7 +54,7 @@ def move():
     y = 0
 
     # Get the direction of movement from the user.
-
+    key = {'w':[]}
     if movement == 'w':
         x -= 1
     elif movement == 'a':
