@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://bgvjyvt86vafh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_p6wi2"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bdv4m"]
+
+[node name="Game" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="CanvasLayer"]
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="CanvasLayer2"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CircleShape2D_p6wi2")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+texture = SubResource("PlaceholderTexture2D_bdv4m")

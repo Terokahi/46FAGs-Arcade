@@ -1,0 +1,19 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dwarves and Dungeons", "Dwarves and Dungeons.csproj", "{BF380284-6A27-44E8-947E-2947F6236A4F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+	Debug|Any CPU = Debug|Any CPU
+	ExportDebug|Any CPU = ExportDebug|Any CPU
+	ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF380284-6A27-44E8-947E-2947F6236A4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF380284-6A27-44E8-947E-2947F6236A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF380284-6A27-44E8-947E-2947F6236A4F}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{BF380284-6A27-44E8-947E-2947F6236A4F}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{BF380284-6A27-44E8-947E-2947F6236A4F}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{BF380284-6A27-44E8-947E-2947F6236A4F}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+	EndGlobalSection
+EndGlobal
