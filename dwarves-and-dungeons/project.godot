@@ -10,21 +10,21 @@ config_version=5
 
 [application]
 
-<<<<<<< Updated upstream
-config/name="Dwarves and Dungeons"
-config/features=PackedStringArray("4.3", "Forward Plus")
-config/icon="res://icon.svg"
-=======
 config/name="Arcade Game"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
+config/icon="res://icon.svg"
+<<<<<<<Updatedupstreamconfig/name="Dwarves and Dungeons"
 
 [autoload]
 
 GlobConf="*res://Scripts/Globals/globConf.gd"
 
+[dotnet]
+
+project/assembly_name="Arcade Game"
+
 [editor]
 
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
->>>>>>> Stashed changes
