@@ -1,3 +1,5 @@
+using System;
+
 namespace RoomGen
 {
     public class Rooms
@@ -7,10 +9,49 @@ namespace RoomGen
         int posX;
         int posY;
 
-        public set_width()
+        // Sets amount of Rooms on the Map
+        private int set_roomAmount()
         {
-            random = new Random();
+            var random = new Random();
+            int roomAmount = random.Next(1, 400);
+            return roomAmount;
+        }
+
+        // Sets width of the Room
+        private int set_width()
+        {
+            var random = new Random();
             width = random.Next(2, 6);
+            return width;
+        }
+        
+        // Sets height of the Room
+        private int set_height()
+        {
+            var random = new Random();
+            height = random.Next(2, 6);
+            return height;
+        }
+
+        // Returns amount of Rooms
+        public int get_roomAmount()
+        {
+            int roomAmount = set_roomAmount();
+            return roomAmount;
+        }
+
+        // Returns width of the Room
+        public int get_width()
+        {
+            width = set_width();
+            return width;
+        }
+        
+        // Returns height of the Room
+        public int get_height()
+        {
+            height = set_height();
+            return height;
         }
     }
 }
