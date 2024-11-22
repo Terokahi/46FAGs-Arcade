@@ -1,27 +1,17 @@
-# arcade-game
+#Dwarves and Dungeons
 
 ## Menu
   ### Mode Selection
-    Roguelite
-    Roguelike
+	Roguelite
+	Roguelike
   ### Options
-    Auflösung ??
-    Sound
+	Auflösung ??
+	Sound
   ### DELETE
-
-## Games
-  Lario
-  Centipede
-  Space Invaders
-  etc...
 
 # Upgrades
   Give upgrade and downgrade all in one
   Gain more money but lose more when you lose
-
-# Separate Games
-## Snake
-  Written in Js runs locally in HTML
 
 ## Dwarves and Dungeons
 ### what is it?
@@ -29,7 +19,9 @@
  and build your own underground city by Hand, find allies and foes on the way down for rarer materials.
 
 ## Currently in the Game
-Nothing besides movement and map generation
+Nothing, currently working on map generation
+for things planned look into the TODO file rough layout for our plan is in there.
+this Project will more then likely never be finished
 
 ### Roguelike inspired by
 Dwarf fortress
