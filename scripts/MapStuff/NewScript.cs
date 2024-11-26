@@ -54,6 +54,11 @@ namespace MapGen
 				map[idx.x, idx.y] = "stone_wall";
 			}
 			UpdateRectInLayersFromArray(map, new Rect2I(0, 0, x, y));
+			///loop to find tileMapLayers to use later maybe: 
+			Node[] nodes = GetNode("../..").GetChildren().ToArray();
+			foreach (Godot.Node node in nodes){
+				if (node is TileMapLayer layer){}
+			}
 		}
 
 		/// Updates the layers from an array.
