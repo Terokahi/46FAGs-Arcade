@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Room;
 
-public partial class MapGen : Node2D
+public partial class MapGen1 : Node2D
 {
 	/// The layers of the map
 	/// @wall > The layer that is used to block the player's movement

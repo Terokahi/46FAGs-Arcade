@@ -38,66 +38,96 @@ namespace MapGen
 			{ 15, new Vector2I(2, 1) }
 		};
 
-
-		private TileMapLayer wall,floor;
-		public void SetWall(){wall = GetNode<TileMapLayer>("Wall");}
-		public void SetFloor(){floor = GetNode<TileMapLayer>("Floor");}
-		public TileMapLayer GetWall => wall;
-		public TileMapLayer GetFloor => floor;
+		private Dictionary<int,TileMapLayer> LayerFromID;
+		private Dictionary<string,int> IDFromLayerName;
+		private Dictionary<string,int> TS_ID;
 
 		public override void _Ready()
 		{
-			SetWall();
-			SetFloor();
+			LayerFromID = new(){
+				{0, GetNode<TileMapLayer>("DecOres")},
+				{1, GetNode<TileMapLayer>("Collision")},
+				{2, GetNode<TileMapLayer>("Walkable")},
+				{3, GetNode<TileMapLayer>("Diveable")}
+			};
+
+			IDFromLayerName = new(){
+				{"DecOres", 0},
+				{"Collision", 1},
+				{"Walkable", 2},
+				{"Diveable", 3}
+			};
+			TS_ID = new(){
+				{"void", -1},
+				{"stone", 0},
+				{"dirt", 1},
+				{"water",37}
+			};
+
 			int x = 20;
 			int y = 20;
-			string[,] map = new string[x, y];
-			var indices = Enumerable.Range(0, x * y).Select(i => new { x = i % x, y = i / x });
+			int z = LayerFromID.Count;
+			int[,,] map = new int[x, y, z];
+			var indices = Enumerable.Range(0, x * y * z).Select(i => new { 
+				x = i % x,
+				y = i % (x * y) / x,
+				z = i / (x * y) });
 			foreach (var idx in indices){
-				map[idx.x, idx.y] = "stone_wall";
+				map[idx.x, idx.y, IDFromLayerName["DecOres"]] = TS_ID["void"];
+				map[idx.x, idx.y, IDFromLayerName["Collision"]] = TS_ID["stone"];
+				map[idx.x, idx.y, IDFromLayerName["Walkable"]] = TS_ID["dirt"];
+				map[idx.x, idx.y, IDFromLayerName["Diveable"]] = TS_ID["water"];
 			}
+
 			UpdateRectInLayersFromArray(map, new Rect2I(0, 0, x, y));
-			///loop to find tileMapLayers to use later maybe: 
-			Node[] nodes = GetNode("../..").GetChildren().ToArray();
-			foreach (Godot.Node node in nodes){
-				if (node is TileMapLayer layer){}
-			}
+
+			/* /// loop to find tileMapLayers to use later maybe: 
+				Node[] nodes = GetNode("../..").GetChildren().ToArray();
+				foreach (Godot.Node node in nodes){
+					if (node is TileMapLayer layer){}
+				}
+			*/
 		}
 
 		/// Updates the layers from an array.
 		/// <param name="map">The array to update the layers from.</param>
 		/// <param name="pos">The position of the array in the tilemap.</param>
-		private void UpdateRectInLayersFromArray(string[,] map, Rect2I pos)
+		private void UpdateRectInLayersFromArray(int[,,] map, Rect2I pos)
 		{
+			//Loop through each cell in the array
 			for (int x = pos.Position.X; x < pos.Size.X + 1; x++)
 			{
 				for (int y = pos.Position.Y; y < pos.Size.Y + 1; y++)
 				{
-					string br = map[x, y];
-					string bl;
-					string tr;
-					string tl;
-					try { bl = map[x - 1, y]; } catch (IndexOutOfRangeException) { bl = "void"; }
-					try { tr = map[x, y - 1]; } catch (IndexOutOfRangeException) { tr = "void"; }
-					try { tl = map[x - 1, y - 1]; } catch (IndexOutOfRangeException) { tl = "void"; }
-					int atlasVector = 0;
-					if (br.Contains("wall")) atlasVector |= (int)Location.LOW_RIGHT;
-					if (bl.Contains("wall")) atlasVector |= (int)Location.LOW_LEFT;
-					if (tr.Contains("wall")) atlasVector |= (int)Location.TOP_RIGHT;
-					if (tl.Contains("wall")) atlasVector |= (int)Location.TOP_LEFT;
-					if (atlasVector == 0)
+					for (int z = 0; z < map.GetLength(2); z++)
 					{
-						if (br.Contains("floor")) atlasVector |= (int)Location.LOW_RIGHT;
-						if (bl.Contains("floor")) atlasVector |= (int)Location.LOW_LEFT;
-						if (tr.Contains("floor")) atlasVector |= (int)Location.TOP_RIGHT;
-						if (tl.Contains("floor")) atlasVector |= (int)Location.TOP_LEFT;
-						GetFloor.SetCell(new Vector2I(x, y), 1, NeighborsToAtlas[atlasVector]);
-						GetWall.SetCell(new Vector2I(x, y), 0, NeighborsToAtlas[0]);//transparent
-					}
-					else
-					{
-						GetFloor.SetCell(new Vector2I(x, y), 1, NeighborsToAtlas[15]);//full tile below walls
-						GetWall.SetCell(new Vector2I(x, y), 0, NeighborsToAtlas[atlasVector]);
+						//Get the current cell from the array
+						int br = map[x, y, z];
+
+						//Get the cells on the top left and right and bottom left and right (-current cell) 
+						//a 2x2 to work for dual grid
+						int bl,tr,tl;
+						try { bl = map[x - 1, y, z]; } catch (IndexOutOfRangeException) { bl = TS_ID["void"]; }
+						try { tr = map[x, y - 1, z]; } catch (IndexOutOfRangeException) { tr = TS_ID["void"]; }
+						try { tl = map[x - 1, y - 1, z]; } catch (IndexOutOfRangeException) { tl = TS_ID["void"]; }
+
+						//Determine the atlas vector based on the neighboring cells
+						int atlasVector = 0;
+						if (br != TS_ID["void"]) atlasVector |= (int)Location.LOW_RIGHT;
+						if (tr != TS_ID["void"]) atlasVector |= (int)Location.TOP_RIGHT;
+						if (tl != TS_ID["void"]) atlasVector |= (int)Location.TOP_LEFT;
+						if (bl != TS_ID["void"]) atlasVector |= (int)Location.LOW_LEFT;
+
+						//If the atlas vector is 0, then the current cell is not a collision, so set the walkable layer
+						if (atlasVector != 0){
+							//TODO: understand how this works correctly plx
+							LayerFromID[z].SetCell(new Vector2I(x, y), ((dynamic)tl).Id, NeighborsToAtlas[atlasVector]);
+						}
+						/* stay transparent
+						else{
+							GD.Print("The fuck you doing???");
+						}
+						*/
 					}
 				}
 			}
@@ -108,3 +138,30 @@ namespace MapGen
 		}
 	}
 }
+/*
+	dict.add <LayerFromID, getNode>
+	
+	arr[x,y] = dict.key(0)
+	arr[x,y+1] = 1
+	if arr[x,y] != 0
+	________
+	private var whatIDFromLayerName = new Dictionary<string,TileMapLayer>{
+	{"stone_collision", GetCollision},
+	{"dirt_walkable", GetWalkable},
+	{"stone_walkable", GetWalkable}
+	}
+	private var whatID = new Dictionary<string,int>{
+	{"stone_collision", 0},
+	{"dirt_walkable", 1},
+	{"stone_walkable", 0}
+	}
+	___________
+	string[,] map ="stone_collision"
+	arr[,,] map= LayerFromID
+	___________
+	
+	dict<new Vector2i, (getIDFromLayerName, int)>
+	*/
+
+	
+
