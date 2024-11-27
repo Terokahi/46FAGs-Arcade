@@ -39,13 +39,16 @@ namespace MapGen
 		};
 
 
-		private TileMapLayer wall;
-		private TileMapLayer floor;
+		private TileMapLayer wall,floor;
+		public void SetWall(){wall = GetNode<TileMapLayer>("Wall");}
+		public void SetFloor(){floor = GetNode<TileMapLayer>("Floor");}
+		public TileMapLayer GetWall => wall;
+		public TileMapLayer GetFloor => floor;
 
 		public override void _Ready()
 		{
-			wall = GetNode<TileMapLayer>("Wall");
-			floor = GetNode<TileMapLayer>("Floor");
+			SetWall();
+			SetFloor();
 			int x = 20;
 			int y = 20;
 			string[,] map = new string[x, y];
@@ -88,13 +91,13 @@ namespace MapGen
 						if (bl.Contains("floor")) atlasVector |= (int)Location.LOW_LEFT;
 						if (tr.Contains("floor")) atlasVector |= (int)Location.TOP_RIGHT;
 						if (tl.Contains("floor")) atlasVector |= (int)Location.TOP_LEFT;
-						floor.SetCell(new Vector2I(x, y), 1, NeighborsToAtlas[atlasVector]);
-						wall.SetCell(new Vector2I(x, y), 0, NeighborsToAtlas[0]);//transparent
+						GetFloor.SetCell(new Vector2I(x, y), 1, NeighborsToAtlas[atlasVector]);
+						GetWall.SetCell(new Vector2I(x, y), 0, NeighborsToAtlas[0]);//transparent
 					}
 					else
 					{
-						floor.SetCell(new Vector2I(x, y), 1, NeighborsToAtlas[15]);//full tile below walls
-						wall.SetCell(new Vector2I(x, y), 0, NeighborsToAtlas[atlasVector]);
+						GetFloor.SetCell(new Vector2I(x, y), 1, NeighborsToAtlas[15]);//full tile below walls
+						GetWall.SetCell(new Vector2I(x, y), 0, NeighborsToAtlas[atlasVector]);
 					}
 				}
 			}
