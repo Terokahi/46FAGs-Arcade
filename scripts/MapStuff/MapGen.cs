@@ -7,7 +7,6 @@ namespace MapGen
 {
 	public partial class MapGen : Node2D
 	{
-
 		/// Contains the available locations for a tile.
 		public enum Location
 		{
@@ -52,13 +51,14 @@ namespace MapGen
 			{"water", 37}
 		};
 
-		int map_width = 20;
-		int map_height = 20;
+		int map_width = 100;
+		int map_height = 100;
 		int[,,] map;
 		public override void _Ready()
 		{
 			registerLayers();
 			initMapArray();
+			createRooms();
 			UpdateTileMapLayers();
 		}
 		private void registerLayers(){
@@ -110,6 +110,7 @@ namespace MapGen
 				UpdateTileMapLayers(new Rect2I(pos,pos), layer.Key);
 			}
 		}
+
 		/// Updates a given Rect2I portion on all layers.
 		/// This function iterates over each layer in the LayerRegistry and updates the tilemap 
 		/// layers within the given Rect2I.
@@ -157,6 +158,24 @@ namespace MapGen
 							GD.Print("The fuck you doing???");
 						}
 					*/
+				}
+			}
+		}
+
+		public void createRooms()
+		{
+			RandomNumberGenerator rng = new RandomNumberGenerator();
+			int roomAmount = 400;
+
+			for (int i = 0; i < roomAmount; i++)
+			{
+				Rect2I room = new Rect2I(rng.RandiRange(0, map_width), rng.RandiRange(0, map_height), rng.RandiRange(5, 10), rng.RandiRange(5, 10));
+				for (int x = room.Position.X; x < room.Size.X; x++)
+				{
+					for (int y = room.Position.Y; y < room.Size.Y; y++)
+					{
+						map[x, y, getLayer_ID["Collision"]] = getTS_ID["none"];
+					}
 				}
 			}
 		}
