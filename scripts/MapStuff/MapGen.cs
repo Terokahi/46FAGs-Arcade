@@ -125,17 +125,18 @@ namespace MapGen
 		private void UpdateTileMapLayers(Rect2I pos, int layerID)
 		{
 			//Loop through each cell in the array
-			for (int x = pos.Position.X; x < pos.Size.X; x++)
+			for (int x = pos.Position.X; x < pos.Size.X +1; x++)
 			{
-				for (int y = pos.Position.Y; y < pos.Size.Y; y++)
+				for (int y = pos.Position.Y; y < pos.Size.Y +1; y++)
 				{
 					//Get the current cell from the array
-					int br = map[x, y, layerID];
+
 
 					//Get the cells on the top left and right and bottom left and right (-current cell) 
 					//a 2x2 to work for dual grid
-					int bl,tr,tl;
+					int br,bl,tr,tl;
 					int ts = -1;
+					try { br = map[x, y, layerID]; } catch (IndexOutOfRangeException) { br = getTS_ID["none"]; }
 					try { bl = map[x - 1, y, layerID]; } catch (IndexOutOfRangeException) { bl = getTS_ID["none"]; }
 					try { tr = map[x, y - 1, layerID]; } catch (IndexOutOfRangeException) { tr = getTS_ID["none"]; }
 					try { tl = map[x - 1, y - 1, layerID]; } catch (IndexOutOfRangeException) { tl = getTS_ID["none"]; }
