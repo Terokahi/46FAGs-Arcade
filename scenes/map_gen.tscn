@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cgv5hmxkarqw6"]
+[gd_scene load_steps=10 format=4 uid="uid://cgv5hmxkarqw6"]
 
 [ext_resource type="Script" path="res://scripts/MapStuff/MapGen.cs" id="1_fklyp"]
 [ext_resource type="Texture2D" uid="uid://ci2ni4po2c4j2" path="res://tilesets/stone.png" id="2_8enby"]
@@ -402,6 +402,7 @@ tile_set = SubResource("TileSet_a5ijo")
 [node name="Walkable" type="TileMapLayer" parent="."]
 show_behind_parent = true
 clip_children = 1
+tile_map_data = PackedByteArray("AAAAAAAAAQACAAEAAAABAAAAAQACAAEAAAACAAAAAQACAAEAAAADAAAAAQACAAEAAAAEAAAAAQACAAEAAAAFAAAAAQACAAEAAAAGAAAAAQACAAEAAAAHAAAAAQACAAEAAAAIAAAAAQACAAEAAAAJAAAAAQACAAEAAAA=")
 tile_set = SubResource("TileSet_6vaw3")
 collision_enabled = false
 

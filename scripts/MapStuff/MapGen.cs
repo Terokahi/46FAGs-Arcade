@@ -51,8 +51,8 @@ namespace MapGen
 			{"water", 37}
 		};
 
-		int map_width = 100;
-		int map_height = 100;
+		int map_width = 119;
+		int map_height = 65;
 		int[,,] map;
 		public override void _Ready()
 		{
@@ -165,11 +165,13 @@ namespace MapGen
 		public void createRooms()
 		{
 			RandomNumberGenerator rng = new RandomNumberGenerator();
-			int roomAmount = 400;
+			int roomAmount = rng.RandiRange(0, 800);
 
 			for (int i = 0; i < roomAmount; i++)
 			{
-				Rect2I room = new Rect2I(rng.RandiRange(0, map_width), rng.RandiRange(0, map_height), rng.RandiRange(5, 10), rng.RandiRange(5, 10));
+				rng.Randomize();
+				Rect2I room = new Rect2I(rng.RandiRange(0, map_width), rng.RandiRange(0, map_height), rng.RandiRange(1, 10), rng.RandiRange(1, 10));
+				GD.Print(room);
 				for (int x = room.Position.X; x < room.Size.X; x++)
 				{
 					for (int y = room.Position.Y; y < room.Size.Y; y++)
