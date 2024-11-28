@@ -8,8 +8,7 @@ namespace MapGen
 	public partial class MapGen : Node2D
 	{
 		/// Contains the available locations for a tile.
-		public enum Location
-		{
+		public enum Location{
 			TOP_LEFT = 1,
 			LOW_LEFT = 2,
 			TOP_RIGHT = 4,
@@ -17,8 +16,7 @@ namespace MapGen
 		}
 
 		/// Contains the available atlas positions for a tile.
-		public static readonly Dictionary<int, Vector2I> NeighborsToAtlas = new Dictionary<int, Vector2I>
-		{
+		public static readonly Dictionary<int, Vector2I> NeighborsToAtlas = new(){
 			{ 0, new Vector2I(0, 3) },
 			{ 1, new Vector2I(3, 3) },
 			{ 2, new Vector2I(0, 0) },
@@ -38,13 +36,13 @@ namespace MapGen
 		};
 
 		private Dictionary<int,TileMapLayer> LayerRegistry;
-		private static Dictionary<string, int> getLayer_ID = new Dictionary<string, int>(){
+		private static readonly Dictionary<string, int> getLayer_ID = new(){
 			{"DecOres", 0},
 			{"Collision", 1},
 			{"Walkable", 2},
 			{"Diveable", 3}
 		};
-		private static Dictionary<string, int> getTS_ID = new Dictionary<string, int>(){
+		private static readonly Dictionary<string, int> getTS_ID = new(){
 			{"none", -1},
 			{"stone", 0},
 			{"dirt", 1},
@@ -56,12 +54,12 @@ namespace MapGen
 		int[,,] map;
 		public override void _Ready()
 		{
-			registerLayers();
-			initMapArray();
-			createRooms();
+			RegisterLayers();
+			InitMapArray();
+			CreateRooms();
 			UpdateTileMapLayers();
 		}
-		private void registerLayers(){
+		private void RegisterLayers(){
 			LayerRegistry = new(){
 				{0, GetNode<TileMapLayer>("DecOres")},
 				{1, GetNode<TileMapLayer>("Collision")},
@@ -70,7 +68,7 @@ namespace MapGen
 			};
 		}
 
-		private void initMapArray(){
+		private void InitMapArray(){
 			map = new int[map_width, map_height, getLayer_ID.Count];
 			var indices = Enumerable.Range(0, map_width * map_height * getLayer_ID.Count).Select(i => new { 
 				x = i % map_width,
@@ -151,7 +149,7 @@ namespace MapGen
 					//If the atlas vector is 0, then the current cell is not a collision, so set the walkable layer
 					if (atlasVector != 0){
 						//TODO: understand how this works correctly plx && run/debug
-						LayerRegistry[layerID].SetCell(new Vector2I(x, y), br, NeighborsToAtlas[atlasVector]);
+						LayerRegistry[layerID].SetCell(new Vector2I(x, y), (br!=getTS_ID["none"]) ? br : tl, NeighborsToAtlas[atlasVector]);
 					}
 					/* stay transparent
 						else{
@@ -162,15 +160,15 @@ namespace MapGen
 			}
 		}
 
-		public void createRooms()
+		public void CreateRooms()
 		{
-			RandomNumberGenerator rng = new RandomNumberGenerator();
+			RandomNumberGenerator rng = new();
 			int roomAmount = rng.RandiRange(0, 800);
 
 			for (int i = 0; i < roomAmount; i++)
 			{
 				rng.Randomize();
-				Rect2I room = new Rect2I(rng.RandiRange(0, map_width), rng.RandiRange(0, map_height), rng.RandiRange(1, 10), rng.RandiRange(1, 10));
+				Rect2I room = new(rng.RandiRange(0, map_width), rng.RandiRange(0, map_height), rng.RandiRange(1, 10), rng.RandiRange(1, 10));
 				GD.Print(room);
 				for (int x = room.Position.X; x < room.Size.X; x++)
 				{
