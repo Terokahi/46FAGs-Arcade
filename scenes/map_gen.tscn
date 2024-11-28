@@ -187,14 +187,18 @@ sources/0 = SubResource("TileSetAtlasSource_yxrx6")
 [node name="MapGen" type="Node2D"]
 script = ExtResource("1_fklyp")
 
-[node name="Wall" type="TileMapLayer" parent="."]
+[node name="Collision" type="TileMapLayer" parent="."]
 show_behind_parent = true
 top_level = true
 clip_children = 1
 tile_set = SubResource("TileSet_a5ijo")
 
-[node name="Floor" type="TileMapLayer" parent="."]
+[node name="Walkable" type="TileMapLayer" parent="."]
 show_behind_parent = true
 top_level = true
 clip_children = 1
 tile_set = SubResource("TileSet_6vaw3")
+
+[node name="Diveable" type="TileMapLayer" parent="."]
+
+[node name="DecOres" type="TileMapLayer" parent="."]
