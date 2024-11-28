@@ -128,8 +128,6 @@ namespace MapGen
 			//Loop through each cell in the array
 			for (int x = pos.Position.X; x < pos.Size.X; x++)
 			{
-				Vector2I Tilepos = new Vector2I(x,y);
-				wall.SetCell(Tilepos,TS_ID,SolidStone);
 				for (int y = pos.Position.Y; y < pos.Size.Y; y++)
 				{
 					//Get the current cell from the array
