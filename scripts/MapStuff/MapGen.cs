@@ -1,101 +1,206 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Room;
+using System.Linq;
 
-public partial class MapGen : Node2D
+namespace MapGen
 {
-	/// The layers of the map
-	/// @wall > The layer that is used to block the player's movement
-	/// @floor > The layer that is used as the visible floor of the map
-	/// @fluid > The layer that is used for fluids such as lava and water
-	private TileMapLayer wall, floor;
-	
-	/// Sets the wall layer of the map
-	/// <param name="node">The wall layer of the map
-	public void setWall()
+	public partial class MapGen : Node2D
 	{
-		wall = GetNode<TileMapLayer>("Wall");
-	}
-	
-	/// Sets the floor layer of the map
-	/// <param name="node">The floor layer of the map
-	public void setFloor()
-	{
-		floor = GetNode<TileMapLayer>("Floor");
-	}
-	
-	public void setDict(Dictionary<int, TileMapLayer> TLM_ID)
-	{		
-		TLM_ID.Add(0, wall);
-		TLM_ID.Add(1, floor);
-	}
-	/// Getter Methods for the Layers
-	public TileMapLayer getWall => wall;
-	public TileMapLayer getFloor => floor;
-	
-	/// Called when the node enters the scene tree for the first time
-	public override void _Ready()
-	{
-		Dictionary<int, TileMapLayer> TLM_ID = new Dictionary <int, TileMapLayer>();
-		
-		setWall();
-		setFloor();
-		
-		setDict(TLM_ID);
-		
-		// Set Map Size relative to screen Size
-		// Saved in var for future use
-		int width = 1920;
-		int height = 1080;
-		
-		MapInit(new Vector2I(0,0), new Vector2I(width, height), getWall);
-	}
-	
-	/// Initializes the map with the given size and wall layer
-	/// <param name="X">The width of the map
-	/// <param name="Y">The height of the map
-	/// <param name="wall">The wall layer of the map
-	
-	/// This function sets the map to a solid stone layer.
+		/// Contains the available locations for a tile.
+		public enum Location{
+			TOP_LEFT = 1,
+			LOW_LEFT = 2,
+			TOP_RIGHT = 4,
+			LOW_RIGHT = 8
+		}
 
-	/// <remarks>
-	/// This function is used to initialize the map with a solid stone layer.
-	/// The map is then ready to be used with the room generation algorithm.
-	private void MapInit(Vector2I pos, Vector2I size, TileMapLayer type)
-	{
-		Vector2I SolidStone = new Vector2I(2,1);
-		int TS_ID = 0;
-		for (int x = pos.X -1; x < size.X; x++)
+		/// Contains the available atlas positions for a tile.
+		public static readonly Dictionary<int, Vector2I> NeighborsToAtlas = new(){
+			{ 0, new Vector2I(0, 3) },
+			{ 1, new Vector2I(3, 3) },
+			{ 2, new Vector2I(0, 0) },
+			{ 3, new Vector2I(3, 2) },
+			{ 4, new Vector2I(0, 2) },
+			{ 5, new Vector2I(1, 2) },
+			{ 6, new Vector2I(2, 3) },
+			{ 7, new Vector2I(3, 1) },
+			{ 8, new Vector2I(1, 3) },
+			{ 9, new Vector2I(0, 1) },
+			{ 10, new Vector2I(3, 0) },
+			{ 11, new Vector2I(2, 0) },
+			{ 12, new Vector2I(1, 0) },
+			{ 13, new Vector2I(2, 2) },
+			{ 14, new Vector2I(1, 1) },
+			{ 15, new Vector2I(2, 1) }
+		};
+
+		private Dictionary<int,TileMapLayer> LayerRegistry;
+		private static readonly Dictionary<string, int> getLayer_ID = new(){
+			{"DecOres", 0},
+			{"Collision", 1},
+			{"Walkable", 2},
+			{"Diveable", 3}
+		};
+		private static readonly Dictionary<string, int> getTS_ID = new(){
+			{"none", -1},
+			{"stone", 0},
+			{"dirt", 1},
+			{"water", 37}
+		};
+
+		int map_width = 1920 / 16;
+		int map_height = 1080 / 16;
+		int[,,] map;
+		public override void _Ready()
 		{
-			for (int y = pos.Y -1; y < size.Y; y++)
-			{
-				Vector2I TilePos = new Vector2I(x,y);
-				type.SetCell(TilePos,TS_ID,SolidStone);
+			RegisterLayers();
+			InitMapArray();
+			CreateRooms();
+			UpdateTileMapLayers();
+		}
+		private void RegisterLayers(){
+			LayerRegistry = new(){
+				{0, GetNode<TileMapLayer>("DecOres")},
+				{1, GetNode<TileMapLayer>("Collision")},
+				{2, GetNode<TileMapLayer>("Walkable")},
+				{3, GetNode<TileMapLayer>("Diveable")}
+			};
+		}
+
+		private void InitMapArray(){
+			map = new int[map_width, map_height, getLayer_ID.Count];
+			var indices = Enumerable.Range(0, map_width * map_height * getLayer_ID.Count).Select(i => new { 
+				x = i % map_width,
+				y = (i % (map_width * map_height)) / map_width,
+				z = i / (map_width * map_height) 
+			});
+			foreach (var idx in indices){
+				map[idx.x, idx.y, getLayer_ID["DecOres"]] = getTS_ID["none"];
+				map[idx.x, idx.y, getLayer_ID["Collision"]] = getTS_ID["stone"];
+				map[idx.x, idx.y, getLayer_ID["Walkable"]] = getTS_ID["dirt"];
+				map[idx.x, idx.y, getLayer_ID["Diveable"]] = getTS_ID["water"];
 			}
 		}
-	}
-	
-	/*	
-	
-	// replaces MapInit() later please
-	private void setArea(Vector2I pos, Vector2I size, [TML_ID, TS_ID])
-	{
-		Vector2I SolidStone = new Vector2I(2,1);
-		wall = getFloor;
-		for (int x = pos.X -1; x < size.X; x++)
-		{
-			for (int y = pos.Y -1; y < size.Y; y++)
-			{
-				Vector2I Tilepos = new Vector2I(x,y);
-				wall.SetCell(Tilepos,TS_ID,SolidStone);
+
+		/// Updates all the layers in the LayerRegistry.
+		/// This function is used to update all the layers in the LayerRegistry.
+		/// It loops through each layer in the LayerRegistry and calls the UpdateTilemapLayers.
+		private void UpdateTileMapLayers(){
+			foreach (var layer in LayerRegistry){
+				UpdateTileMapLayers(new Rect2I(0,0,map_width,map_height), layer.Key);
 			}
 		}
-	}
-	*/
-	/// Called every frame. 'delta' is the elapsed time since the previous frame
-	/// <param name="delta">The time elapsed since the previous frame
-	public override void _Process(double delta)
-	{
+
+		/// Updates a single cell on the given layer.
+		/// <param name="pos">The position of the cell to update.
+		/// <param name="layerID">The id of the layer to update.
+		private void UpdateTileMapLayers(Vector2I pos, int layerID){
+			UpdateTileMapLayers(new Rect2I(pos,pos), layerID);
+		}
+		
+		/// Updates all layers at a specific position.
+		/// This function iterates over each layer in the LayerRegistry and updates the tilemap 
+		/// layers at the specified position.
+		/// <param name="pos">The position of the cell to update across all layers.
+		private void UpdateTileMapLayers(Vector2I pos){
+			foreach (var layer in LayerRegistry){
+				UpdateTileMapLayers(new Rect2I(pos,pos), layer.Key);
+			}
+		}
+
+		/// Updates a given Rect2I portion on all layers.
+		/// This function iterates over each layer in the LayerRegistry and updates the tilemap 
+		/// layers within the given Rect2I.
+		/// <param name="pos">The Rect2I that contains the cells to update across all layers.
+		private void UpdateTileMapLayers(Rect2I pos){
+			foreach (var layer in LayerRegistry){
+				UpdateTileMapLayers(pos, layer.Key);
+			}
+		}
+
+		/// Updates a given Rect2I portion on the given Layer.
+		/// <param name="pos">The position of the Rect2I.
+		/// <param name="layerID">The id of the layer to update.
+		private void UpdateTileMapLayers(Rect2I pos, int layerID)
+		{
+			//Loop through each cell in the array
+			for (int x = pos.Position.X; x < pos.Size.X +1; x++)
+			{
+				for (int y = pos.Position.Y; y < pos.Size.Y +1; y++)
+				{
+					//Get the current cell from the array
+
+
+					//Get the cells on the top left and right and bottom left and right (-current cell) 
+					//a 2x2 to work for dual grid
+					int br,bl,tr,tl;
+					int ts = -1;
+					try { br = map[x, y, layerID]; } catch (IndexOutOfRangeException) { br = getTS_ID["none"]; }
+					try { bl = map[x - 1, y, layerID]; } catch (IndexOutOfRangeException) { bl = getTS_ID["none"]; }
+					try { tr = map[x, y - 1, layerID]; } catch (IndexOutOfRangeException) { tr = getTS_ID["none"]; }
+					try { tl = map[x - 1, y - 1, layerID]; } catch (IndexOutOfRangeException) { tl = getTS_ID["none"]; }
+
+					//Determine the atlas vector based on the neighboring cells
+					int atlasVector = 0;
+					if (br != getTS_ID["none"]) {atlasVector |= (int)Location.LOW_RIGHT; ts = br;}
+					if (tr != getTS_ID["none"]) {atlasVector |= (int)Location.TOP_RIGHT; ts = tr;}
+					if (tl != getTS_ID["none"]) {atlasVector |= (int)Location.TOP_LEFT; ts = tl;}
+					if (bl != getTS_ID["none"]) {atlasVector |= (int)Location.LOW_LEFT; ts = bl;}
+
+					//If the atlas vector is 0, then the current cell is not a collision, so set the walkable layer
+					if (atlasVector != 0){
+						//TODO: understand how this works correctly plx && run/debug
+						LayerRegistry[layerID].SetCell(new Vector2I(x, y), ts, NeighborsToAtlas[atlasVector]);
+					}
+					//stay transparent
+						/* else{
+							GD.Print("The fuck you doing???");
+						} */
+					
+				}
+			}
+		}
+
+		public void CreateRooms()
+		{
+			int FailedCounter = 0;
+			RandomNumberGenerator rng = new();
+
+			int roomAmount = rng.RandiRange(1, 400);
+			int min_size = 2;
+			int max_size = 6;
+			
+			for (int i = 0; i < roomAmount; i++)
+			{
+				rng.Randomize();
+				Vector2I roomPos = new(rng.RandiRange(0, map_width-1), rng.RandiRange(0, map_height-1));
+				Vector2I roomSize = new(rng.RandiRange(min_size, max_size), rng.RandiRange(min_size, max_size));
+
+				GD.Print("RoomPos: " + roomPos + "\n" + "RoomSize: " + roomSize);
+				
+				if (roomPos.X + roomSize.X > map_width || roomPos.Y + roomSize.Y > map_height)
+				{
+					FailedCounter++;
+					continue;
+				}
+				for (int x = roomPos.X; x < roomPos.X + roomSize.X; x++)
+				{
+					for (int y = roomPos.Y; y < roomPos.Y + roomSize.Y; y++)
+					{
+						map[x, y, getLayer_ID["Collision"]] = getTS_ID["none"];
+						//map[x, y, getLayer_ID["Walkable"]] = getTS_ID["dirt"];
+					}
+				}
+			GD.Print("RoomAmount: " + roomAmount);
+			GD.Print("FailedCounter: " + FailedCounter);
+			}
+		}
+
+		public override void _Process(double delta)
+		{
+		}
 	}
 }
+
+
