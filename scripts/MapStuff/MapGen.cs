@@ -49,8 +49,8 @@ namespace MapGen
 			{"water", 37}
 		};
 
-		int map_width = 119;
-		int map_height = 65;
+		int map_width = 1920 / 16;
+		int map_height = 1080 / 16;
 		int[,,] map;
 		public override void _Ready()
 		{
@@ -151,32 +151,47 @@ namespace MapGen
 						//TODO: understand how this works correctly plx && run/debug
 						LayerRegistry[layerID].SetCell(new Vector2I(x, y), (br!=getTS_ID["none"]) ? br : tl, NeighborsToAtlas[atlasVector]);
 					}
-					/* stay transparent
-						else{
+					//stay transparent
+						/* else{
 							GD.Print("The fuck you doing???");
-						}
-					*/
+						} */
+					
 				}
 			}
 		}
 
 		public void CreateRooms()
 		{
+			int FailedCounter = 0;
 			RandomNumberGenerator rng = new();
-			int roomAmount = rng.RandiRange(0, 800);
 
+			int roomAmount = rng.RandiRange(1, 400);
+			int min_size = 2;
+			int max_size = 6;
+			
 			for (int i = 0; i < roomAmount; i++)
 			{
 				rng.Randomize();
-				Rect2I room = new(rng.RandiRange(0, map_width), rng.RandiRange(0, map_height), rng.RandiRange(1, 10), rng.RandiRange(1, 10));
-				GD.Print(room);
-				for (int x = room.Position.X; x < room.Size.X; x++)
+				Vector2I roomPos = new(rng.RandiRange(0, map_width-1), rng.RandiRange(0, map_height-1));
+				Vector2I roomSize = new(rng.RandiRange(min_size, max_size), rng.RandiRange(min_size, max_size));
+
+				GD.Print("RoomPos: " + roomPos + "\n" + "RoomSize: " + roomSize);
+				
+				if (roomPos.X + roomSize.X > map_width || roomPos.Y + roomSize.Y > map_height)
 				{
-					for (int y = room.Position.Y; y < room.Size.Y; y++)
+					FailedCounter++;
+					continue;
+				}
+				for (int x = roomPos.X; x < roomPos.X + roomSize.X; x++)
+				{
+					for (int y = roomPos.Y; y < roomPos.Y + roomSize.Y; y++)
 					{
 						map[x, y, getLayer_ID["Collision"]] = getTS_ID["none"];
+						//map[x, y, getLayer_ID["Walkable"]] = getTS_ID["dirt"];
 					}
 				}
+			GD.Print("RoomAmount: " + roomAmount);
+			GD.Print("FailedCounter: " + FailedCounter);
 			}
 		}
 
