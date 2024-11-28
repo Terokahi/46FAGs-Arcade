@@ -150,7 +150,7 @@ namespace MapGen
 					//If the atlas vector is 0, then the current cell is not a collision, so set the walkable layer
 					if (atlasVector != 0){
 						//TODO: understand how this works correctly plx && run/debug
-						LayerRegistry[layerID].SetCell(new Vector2I(x, y), ((dynamic)tl).Id, NeighborsToAtlas[atlasVector]);
+						LayerRegistry[layerID].SetCell(new Vector2I(x, y), br, NeighborsToAtlas[atlasVector]);
 					}
 					/* stay transparent
 						else{
