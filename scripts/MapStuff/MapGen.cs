@@ -135,21 +135,22 @@ namespace MapGen
 					//Get the cells on the top left and right and bottom left and right (-current cell) 
 					//a 2x2 to work for dual grid
 					int bl,tr,tl;
+					int ts = -1;
 					try { bl = map[x - 1, y, layerID]; } catch (IndexOutOfRangeException) { bl = getTS_ID["none"]; }
 					try { tr = map[x, y - 1, layerID]; } catch (IndexOutOfRangeException) { tr = getTS_ID["none"]; }
 					try { tl = map[x - 1, y - 1, layerID]; } catch (IndexOutOfRangeException) { tl = getTS_ID["none"]; }
 
 					//Determine the atlas vector based on the neighboring cells
 					int atlasVector = 0;
-					if (br != getTS_ID["none"]) atlasVector |= (int)Location.LOW_RIGHT;
-					if (tr != getTS_ID["none"]) atlasVector |= (int)Location.TOP_RIGHT;
-					if (tl != getTS_ID["none"]) atlasVector |= (int)Location.TOP_LEFT;
-					if (bl != getTS_ID["none"]) atlasVector |= (int)Location.LOW_LEFT;
+					if (br != getTS_ID["none"]) {atlasVector |= (int)Location.LOW_RIGHT; ts = br;}
+					if (tr != getTS_ID["none"]) {atlasVector |= (int)Location.TOP_RIGHT; ts = tr;}
+					if (tl != getTS_ID["none"]) {atlasVector |= (int)Location.TOP_LEFT; ts = tl;}
+					if (bl != getTS_ID["none"]) {atlasVector |= (int)Location.LOW_LEFT; ts = bl;}
 
 					//If the atlas vector is 0, then the current cell is not a collision, so set the walkable layer
 					if (atlasVector != 0){
 						//TODO: understand how this works correctly plx && run/debug
-						LayerRegistry[layerID].SetCell(new Vector2I(x, y), (br!=getTS_ID["none"]) ? br : tl, NeighborsToAtlas[atlasVector]);
+						LayerRegistry[layerID].SetCell(new Vector2I(x, y), ts, NeighborsToAtlas[atlasVector]);
 					}
 					//stay transparent
 						/* else{
