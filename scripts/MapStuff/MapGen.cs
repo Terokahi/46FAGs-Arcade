@@ -2,11 +2,21 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using character;
+using globals;
+using System.Security.Cryptography.X509Certificates;
+using System.Net;
+using System.Numerics;
 
 namespace MapGen
 {
 	public partial class MapGen : Node2D
 	{
+		globals.globals global = new globals.globals(); 
+		RandomNumberGenerator rng = new();
+		character.PC PC = new character.PC();
+		CharacterBody2D characterBody;
+
 		/// Contains the available locations for a tile.
 		public enum Location{
 			TOP_LEFT = 1,
@@ -49,16 +59,30 @@ namespace MapGen
 			{"water", 37}
 		};
 
-		int map_width = 1920 / 16;
-		int map_height = 1080 / 16;
+		int map_width;
+		int map_height;
 		int[,,] map;
 		public override void _Ready()
 		{
+			setMapsize();
 			RegisterLayers();
 			InitMapArray();
 			CreateRooms();
 			UpdateTileMapLayers();
+			setCharacterBody();
+			setChar();
+			}
+
+		public void setCharacterBody()
+		{
+			characterBody = GetNode<CharacterBody2D>("PC");
 		}
+
+		public void setMapsize(){
+			map_width = global.map_width;
+			map_height = global.map_height;
+		}
+
 		private void RegisterLayers(){
 			LayerRegistry = new(){
 				{0, GetNode<TileMapLayer>("DecOres")},
@@ -165,7 +189,6 @@ namespace MapGen
 		public void CreateRooms()
 		{
 			int FailedCounter = 0;
-			RandomNumberGenerator rng = new();
 
 			int roomAmount = rng.RandiRange(1, 400);
 			int min_size = 2;
@@ -195,6 +218,25 @@ namespace MapGen
 			GD.Print("RoomAmount: " + roomAmount);
 			GD.Print("FailedCounter: " + FailedCounter);
 			}
+		}
+
+		public void setChar()
+		{ //set sprite for layer
+			rng.Randomize();
+			bool posFlag = false;
+			int x;
+			int y;
+			while (posFlag != true)
+			{
+				x = rng.RandiRange(0, map_width - 1);
+				y = rng.RandiRange(0, map_height - 1);
+				if (map[x,y,getLayer_ID["Collision"]] == getTS_ID["none"]);
+				{	
+					posFlag = true;
+					characterBody.Position = new Vector2I(x,y);
+				}		
+			}
+			GD.Print(characterBody.Position);
 		}
 
 		public override void _Process(double delta)
