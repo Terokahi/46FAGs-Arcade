@@ -232,6 +232,7 @@ namespace MapGen
 				{	
 					posFlag = true;
 					characterBody.Position = new Vector2I(x,y);
+					GetNode<Sprite2D>("PC/PC_Sprite").Position = new Vector2I(x,y);
 				}		
 			}
 			GD.Print(characterBody.Position);
