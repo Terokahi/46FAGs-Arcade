@@ -7,6 +7,13 @@ namespace MapGen
 {
 	public partial class MapGen : Node2D
 	{
+<<<<<<< Updated upstream
+=======
+		RandomNumberGenerator rng = new();
+		PC PC = new();
+		CharacterBody2D characterBody;
+
+>>>>>>> Stashed changes
 		/// Contains the available locations for a tile.
 		public enum Location{
 			TOP_LEFT = 1,
@@ -49,8 +56,14 @@ namespace MapGen
 			{"water", 37}
 		};
 
+<<<<<<< Updated upstream
 		int map_width = 1920 / 16;
 		int map_height = 1080 / 16;
+=======
+		int map_width;
+		int map_height;
+		int tilesize;
+>>>>>>> Stashed changes
 		int[,,] map;
 		public override void _Ready()
 		{
@@ -59,6 +72,16 @@ namespace MapGen
 			CreateRooms();
 			UpdateTileMapLayers();
 		}
+<<<<<<< Updated upstream
+=======
+
+		public void SetMapsize(){
+			map_width = Globals.GetMapWidth();
+			map_height = Globals.GetMapHeight();
+			tilesize = Globals.GetTileSize();
+		}
+
+>>>>>>> Stashed changes
 		private void RegisterLayers(){
 			LayerRegistry = new(){
 				{0, GetNode<TileMapLayer>("DecOres")},
@@ -197,6 +220,29 @@ namespace MapGen
 			}
 		}
 
+<<<<<<< Updated upstream
+=======
+		public void SetChar()
+		{ //set sprite for layer
+			rng.Randomize();
+			int x;
+			int y;
+			while (true)
+			{
+				x = rng.RandiRange(0, map_width -1);
+				y = rng.RandiRange(0, map_height -1);
+				if (map[x, y, getLayer_ID["Collision"]] == getTS_ID["none"])
+				{
+					Vector2I pos = new((x*tilesize)+8,(y*tilesize)+8);
+					characterBody.Position = pos;
+					GetNode<Sprite2D>("PC/PC_Sprite").Position = pos;
+					break;
+				}
+			}
+			GD.Print(characterBody.Position);
+		}
+
+>>>>>>> Stashed changes
 		public override void _Process(double delta)
 		{
 		}
