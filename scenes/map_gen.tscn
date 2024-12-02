@@ -454,15 +454,12 @@ show_behind_parent = true
 
 [node name="PC" type="CharacterBody2D" parent="."]
 visibility_layer = 2
-position = Vector2(-8, -8)
 script = ExtResource("4_ftsdy")
 
 [node name="PC_HB" type="CollisionShape2D" parent="PC"]
 shape = SubResource("RectangleShape2D_df58g")
 
 [node name="PC_Sprite" type="Sprite2D" parent="PC"]
-top_level = true
-position = Vector2(-8, -8)
 scale = Vector2(8, 8)
 texture = SubResource("PlaceholderTexture2D_4f034")
 

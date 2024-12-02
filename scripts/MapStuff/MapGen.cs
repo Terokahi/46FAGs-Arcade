@@ -7,6 +7,7 @@ using globals;
 using System.Security.Cryptography.X509Certificates;
 using System.Net;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace MapGen
 {
@@ -217,27 +218,43 @@ namespace MapGen
 			GD.Print("FailedCounter: " + FailedCounter);
 			}
 		}
-
+		
+		/// <summary>
+		/// Randomly places char on the TML Walkable 
+		/// </summary>
+		
 		public void SetChar()
-		{ //set sprite for layer
+		{ 
+			/// init RNG and Randomly set 
+			/// x = 0 -> map_width
+			/// y = 0 -> map_height
 			rng.Randomize();
-			bool posFlag = false;
-			int x;
-			int y;
-			while (posFlag != true)
+			int x = rng.RandiRange(1, map_width - 1);
+			int y = rng.RandiRange(1, map_height - 1);
+			/// set char position to random Walkable tile
+			while (x < map_width)
 			{
-				x = rng.RandiRange(0, 1919);
-				y = rng.RandiRange(0, 1079);
-				if (map[x / 17,y / 18,getLayer_ID["Collision"]] == getTS_ID["none"])
-				{	
-					posFlag = true;
-					characterBody.Position = new Vector2I(x - 8,y - 8);
-					GetNode<Sprite2D>("PC/PC_Sprite").Position = new Vector2I(x - 8,y - 8);
-				}		
+				while (y < map_height)
+				{
+					///If current tile is walkable in TML Collision break out off loop
+					if (map[x, y, getLayer_ID["Collision"]] == getTS_ID["none"])						
+						break;
+					x++;
+					y++;
+					///if x and y are equal to map width and map height
+					///set x and y to 1
+					if (x == 121 && y == 68)
+					{
+						GD.Print("Please?");
+						x = 1;
+						y = 1;
+					}
+					continue;					
+				}
+				characterBody.Position = LayerRegistry[getLayer_ID["Walkable"]].MapToLocal(new Vector2I(x + 1, y + 1));
+				break;
 			}
-			GD.Print(characterBody.Position);
 		}
-
 		public override void _Process(double delta)
 		{
 		}
