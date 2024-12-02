@@ -12,7 +12,7 @@ namespace MapGen
 {
 	public partial class MapGen : Node2D
 	{
-		readonly globals.globals global = new();
+		readonly globals.Globals global = new();
 		RandomNumberGenerator rng = new();
 		character.PC PC = new();
 		CharacterBody2D characterBody;
