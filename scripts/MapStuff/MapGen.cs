@@ -2,18 +2,20 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using character;
+using globals;
+using System.Security.Cryptography.X509Certificates;
+using System.Net;
+using System.Numerics;
 
 namespace MapGen
 {
 	public partial class MapGen : Node2D
 	{
-<<<<<<< Updated upstream
-=======
 		RandomNumberGenerator rng = new();
 		PC PC = new();
 		CharacterBody2D characterBody;
 
->>>>>>> Stashed changes
 		/// Contains the available locations for a tile.
 		public enum Location{
 			TOP_LEFT = 1,
@@ -56,24 +58,25 @@ namespace MapGen
 			{"water", 37}
 		};
 
-<<<<<<< Updated upstream
-		int map_width = 1920 / 16;
-		int map_height = 1080 / 16;
-=======
 		int map_width;
 		int map_height;
 		int tilesize;
->>>>>>> Stashed changes
 		int[,,] map;
 		public override void _Ready()
 		{
+			SetMapsize();
 			RegisterLayers();
 			InitMapArray();
 			CreateRooms();
 			UpdateTileMapLayers();
+			SetCharacterBody();
+			SetChar();
+			}
+
+		public void SetCharacterBody()
+		{
+			characterBody = GetNode<CharacterBody2D>("PC");
 		}
-<<<<<<< Updated upstream
-=======
 
 		public void SetMapsize(){
 			map_width = Globals.GetMapWidth();
@@ -81,7 +84,6 @@ namespace MapGen
 			tilesize = Globals.GetTileSize();
 		}
 
->>>>>>> Stashed changes
 		private void RegisterLayers(){
 			LayerRegistry = new(){
 				{0, GetNode<TileMapLayer>("DecOres")},
@@ -110,9 +112,7 @@ namespace MapGen
 		/// This function is used to update all the layers in the LayerRegistry.
 		/// It loops through each layer in the LayerRegistry and calls the UpdateTilemapLayers.
 		private void UpdateTileMapLayers(){
-			foreach (var layer in LayerRegistry){
-				UpdateTileMapLayers(new Rect2I(0,0,map_width,map_height), layer.Key);
-			}
+			UpdateTileMapLayers(new Rect2I(0,0,map_width,map_height));
 		}
 
 		/// Updates a single cell on the given layer.
@@ -188,7 +188,6 @@ namespace MapGen
 		public void CreateRooms()
 		{
 			int FailedCounter = 0;
-			RandomNumberGenerator rng = new();
 
 			int roomAmount = rng.RandiRange(1, 400);
 			int min_size = 2;
@@ -220,20 +219,19 @@ namespace MapGen
 			}
 		}
 
-<<<<<<< Updated upstream
-=======
 		public void SetChar()
 		{ //set sprite for layer
 			rng.Randomize();
 			int x;
 			int y;
+			int tilesize = 16;
 			while (true)
 			{
 				x = rng.RandiRange(0, map_width -1);
 				y = rng.RandiRange(0, map_height -1);
 				if (map[x, y, getLayer_ID["Collision"]] == getTS_ID["none"])
 				{
-					Vector2I pos = new((x*tilesize)+8,(y*tilesize)+8);
+					Vector2I pos = new(x*tilesize,y*tilesize);
 					characterBody.Position = pos;
 					GetNode<Sprite2D>("PC/PC_Sprite").Position = pos;
 					break;
@@ -242,11 +240,8 @@ namespace MapGen
 			GD.Print(characterBody.Position);
 		}
 
->>>>>>> Stashed changes
 		public override void _Process(double delta)
 		{
 		}
 	}
 }
-
-

@@ -1,8 +1,4 @@
-using System.Dynamic;
-using System.Security.Cryptography.X509Certificates;
 using Godot;
-using globals;
-
 namespace globals
 {
     public partial class Globals : Node
