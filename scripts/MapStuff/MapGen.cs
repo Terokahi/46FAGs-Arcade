@@ -226,13 +226,13 @@ namespace MapGen
 			int y;
 			while (posFlag != true)
 			{
-				x = rng.RandiRange(0, map_width - 1);
-				y = rng.RandiRange(0, map_height - 1);
-				if (map[x,y,getLayer_ID["Collision"]] == getTS_ID["none"])
+				x = rng.RandiRange(0, 1919);
+				y = rng.RandiRange(0, 1079);
+				if (map[x / 17,y / 18,getLayer_ID["Collision"]] == getTS_ID["none"])
 				{	
 					posFlag = true;
-					characterBody.Position = new Vector2I(x,y);
-					GetNode<Sprite2D>("PC/PC_Sprite").Position = new Vector2I(x,y);
+					characterBody.Position = new Vector2I(x - 8,y - 8);
+					GetNode<Sprite2D>("PC/PC_Sprite").Position = new Vector2I(x - 8,y - 8);
 				}		
 			}
 			GD.Print(characterBody.Position);
