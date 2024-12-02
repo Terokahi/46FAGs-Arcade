@@ -232,8 +232,8 @@ namespace MapGen
 				if (map[x, y, getLayer_ID["Collision"]] == getTS_ID["none"])
 				{
 					Vector2I pos = new(x*tilesize,y*tilesize);
-					characterBody.Position = pos;
-					GetNode<Sprite2D>("PC/PC_Sprite").Position = pos;
+					characterBody.Position = LayerRegistry[getLayer_ID["Collision"]].LocalToMap(pos);
+					GetNode<Sprite2D>("PC/PC_Sprite").Position = LayerRegistry[getLayer_ID["Collision"]].LocalToMap(pos);
 					break;
 				}
 			}
