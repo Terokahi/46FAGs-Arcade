@@ -64,21 +64,21 @@ namespace MapGen
 		int[,,] map;
 		public override void _Ready()
 		{
-			setMapsize();
+			SetMapsize();
 			RegisterLayers();
 			InitMapArray();
 			CreateRooms();
 			UpdateTileMapLayers();
-			setCharacterBody();
-			setChar();
+			SetCharacterBody();
+			SetChar();
 			}
 
-		public void setCharacterBody()
+		public void SetCharacterBody()
 		{
 			characterBody = GetNode<CharacterBody2D>("PC");
 		}
 
-		public void setMapsize(){
+		public void SetMapsize(){
 			map_width = global.map_width;
 			map_height = global.map_height;
 		}
@@ -111,9 +111,7 @@ namespace MapGen
 		/// This function is used to update all the layers in the LayerRegistry.
 		/// It loops through each layer in the LayerRegistry and calls the UpdateTilemapLayers.
 		private void UpdateTileMapLayers(){
-			foreach (var layer in LayerRegistry){
-				UpdateTileMapLayers(new Rect2I(0,0,map_width,map_height), layer.Key);
-			}
+			UpdateTileMapLayers(new Rect2I(0,0,map_width,map_height));
 		}
 
 		/// Updates a single cell on the given layer.
@@ -220,7 +218,7 @@ namespace MapGen
 			}
 		}
 
-		public void setChar()
+		public void SetChar()
 		{ //set sprite for layer
 			rng.Randomize();
 			bool posFlag = false;
@@ -230,7 +228,7 @@ namespace MapGen
 			{
 				x = rng.RandiRange(0, map_width - 1);
 				y = rng.RandiRange(0, map_height - 1);
-				if (map[x,y,getLayer_ID["Collision"]] == getTS_ID["none"]);
+				if (map[x,y,getLayer_ID["Collision"]] == getTS_ID["none"])
 				{	
 					posFlag = true;
 					characterBody.Position = new Vector2I(x,y);
@@ -244,5 +242,3 @@ namespace MapGen
 		}
 	}
 }
-
-
