@@ -12,9 +12,9 @@ namespace MapGen
 {
 	public partial class MapGen : Node2D
 	{
-		readonly globals.globals global = new();
+		readonly Globals global = new();
 		RandomNumberGenerator rng = new();
-		character.PC PC = new();
+		PC PC = new();
 		CharacterBody2D characterBody;
 
 		/// Contains the available locations for a tile.
