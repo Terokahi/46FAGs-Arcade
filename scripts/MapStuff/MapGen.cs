@@ -198,8 +198,6 @@ namespace MapGen
 				rng.Randomize();
 				Vector2I roomPos = new(rng.RandiRange(0, map_width-1), rng.RandiRange(0, map_height-1));
 				Vector2I roomSize = new(rng.RandiRange(min_size, max_size), rng.RandiRange(min_size, max_size));
-
-				GD.Print("RoomPos: " + roomPos + "\n" + "RoomSize: " + roomSize);
 				
 				if (roomPos.X + roomSize.X > map_width || roomPos.Y + roomSize.Y > map_height)
 				{
@@ -214,8 +212,6 @@ namespace MapGen
 						//map[x, y, getLayer_ID["Walkable"]] = getTS_ID["dirt"];
 					}
 				}
-			GD.Print("RoomAmount: " + roomAmount);
-			GD.Print("FailedCounter: " + FailedCounter);
 			}
 		}
 
@@ -225,19 +221,36 @@ namespace MapGen
 			int x;
 			int y;
 			int tilesize = 16;
+/*
+			GD.Print(map_width + " + " + map_height);
+			string output;
+			for (int i = 0; i < map_width; i++){
+				output = "";
+				for (int j = 0; j < map_height; j++){
+					if (j == 0 && i == 0) {
+						for (int k = 0; k < map_height; k++){
+							output += " " + k;
+						}
+						GD.Print(output);
+						output = "";
+					}
+					output += map[i, j, getLayer_ID["Collision"]] == getTS_ID["none"] ? "0 " : "1 ";
+				}
+				GD.Print(i + ": |" + output + "|");
+			}
+*/
 			while (true)
 			{
-				x = rng.RandiRange(0, map_width -1);
-				y = rng.RandiRange(0, map_height -1);
+				x = rng.RandiRange(1, map_width -1);
+				y = rng.RandiRange(1, map_height -1);
 				if (map[x, y, getLayer_ID["Collision"]] == getTS_ID["none"])
 				{
 					Vector2I pos = new(x*tilesize,y*tilesize);
-					characterBody.Position = LayerRegistry[getLayer_ID["Collision"]].LocalToMap(pos);
-					GetNode<Sprite2D>("PC/PC_Sprite").Position = LayerRegistry[getLayer_ID["Collision"]].LocalToMap(pos);
+					characterBody.Position = pos;
+					GetNode<Sprite2D>("PC/PC_Sprite").Position = pos;
 					break;
 				}
 			}
-			GD.Print(characterBody.Position);
 		}
 
 		public override void _Process(double delta)
