@@ -4,10 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using character;
 using globals;
-using System.Security.Cryptography.X509Certificates;
-using System.Net;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace MapGen
 {
@@ -257,6 +253,9 @@ namespace MapGen
 		}
 		public override void _Process(double delta)
 		{
+			Vector2I CharPos = LayerRegistry[getLayer_ID["Collision"]].LocalToMap(characterBody.Position);
+			Vector2I CheckPos = PC.Move();
+			characterBody.Position += CheckPos;
 		}
 	}
 }
