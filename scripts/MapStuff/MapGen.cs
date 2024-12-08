@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using character;
 using globals;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MapGen
 {
@@ -13,6 +16,8 @@ namespace MapGen
 		RandomNumberGenerator rng = new();
 		PC PC = new();
 		CharacterBody2D characterBody;
+		
+		Vector2I spawnPos; 
 
 		/// Contains the available locations for a tile.
 		public enum Location{
@@ -64,10 +69,10 @@ namespace MapGen
 			SetMapsize();
 			RegisterLayers();
 			InitMapArray();
-			CreateRooms();
-			UpdateTileMapLayers();
 			SetCharacterBody();
-			SetChar();
+
+			CreateRooms();
+			UpdateTileMapLayers();                                                                                                                          
 			}
 
 		public void SetCharacterBody()
@@ -172,6 +177,7 @@ namespace MapGen
 						//TODO: understand how this works correctly plx && run/debug
 						LayerRegistry[layerID].SetCell(new Vector2I(x, y), ts, NeighborsToAtlas[atlasVector]);
 					}
+
 					//stay transparent
 						/* else{
 							GD.Print("The fuck you doing???");
@@ -183,79 +189,53 @@ namespace MapGen
 
 		public void CreateRooms()
 		{
-			int FailedCounter = 0;
+			int roomAmount = rng.RandiRange(4, 500);
+			int minSize = 2;
+			int maxSize = 6;
 
-			int roomAmount = rng.RandiRange(1, 400);
-			int min_size = 2;
-			int max_size = 6;
+			int spawnCheck = rng.RandiRange(1, roomAmount);
 			
+			
+
 			for (int i = 0; i < roomAmount; i++)
 			{
-				rng.Randomize();
-				Vector2I roomPos = new(rng.RandiRange(0, map_width-1), rng.RandiRange(0, map_height-1));
-				Vector2I roomSize = new(rng.RandiRange(min_size, max_size), rng.RandiRange(min_size, max_size));
+				Vector2I roomPos = new Vector2I(rng.RandiRange(0, map_width-6), rng.RandiRange(0, map_height-6));
+				Vector2I roomSize = new Vector2I(rng.RandiRange(roomPos.X + minSize, roomPos.X + maxSize), rng.RandiRange(roomPos.Y + minSize, roomPos.Y + maxSize));
+				if (roomSize.X > map_width || roomSize.Y > map_height)
+				{
+					
+				}
+				for (int x = roomPos.X; x < roomSize.X; x++)
+				{	
+					for (int y = roomPos.Y; y < roomSize.Y; y++)
+					{
+						map[x,y,getLayer_ID["Collision"]] = getTS_ID["none"];
+					}
+				}
 
-				GD.Print("RoomPos: " + roomPos + "\n" + "RoomSize: " + roomSize);
-				
-				if (roomPos.X + roomSize.X > map_width || roomPos.Y + roomSize.Y > map_height)
+				if (i == spawnCheck)
 				{
-					FailedCounter++;
-					continue;
+					spawnPos = new Vector2I(rng.RandiRange(roomPos.X+1, roomSize.X-1), rng.RandiRange(roomPos.Y+1, roomSize.Y-1));
+					characterBody.Position = LayerRegistry[getLayer_ID["Walkable"]].MapToLocal(spawnPos);
+					GD.Print("This works. "+ '\n' + "Room Nmbr: " + spawnCheck + '\n' + "Spawn X: " + spawnPos.X + '\n' + "Spawn Y: " + spawnPos.Y);
 				}
-				for (int x = roomPos.X; x < roomPos.X + roomSize.X; x++)
-				{
-					for (int y = roomPos.Y; y < roomPos.Y + roomSize.Y; y++)
-					{
-						map[x, y, getLayer_ID["Collision"]] = getTS_ID["none"];
-						//map[x, y, getLayer_ID["Walkable"]] = getTS_ID["dirt"];
-					}
-				}
-			GD.Print("RoomAmount: " + roomAmount);
-			GD.Print("FailedCounter: " + FailedCounter);
 			}
+			GD.Print("roomAmount: " + roomAmount);
 		}
 		
-		/// <summary>
-		/// Randomly places char on the TML Walkable 
-		/// </summary>
-		
-		public void SetChar()
-		{ 
-			/// init RNG and Randomly set 
-			/// x = 0 -> map_width
-			/// y = 0 -> map_height
-			rng.Randomize();
-			int x = rng.RandiRange(1, map_width - 1);
-			int y = rng.RandiRange(1, map_height - 1);
-			/// set char position to random Walkable tile
-			while (x < map_width)
-			{
-				while (y < map_height)
-				{
-					///If current tile is walkable in TML Collision break out off loop
-					if (map[x, y, getLayer_ID["Collision"]] == getTS_ID["none"])						
-						break;
-					x++;
-					y++;
-					///if x and y are equal to map width and map height
-					///set x and y to 1
-					if (x == 121 && y == 68)
-					{
-						GD.Print("Please?");
-						x = 1;
-						y = 1;
-					}
-					continue;					
-				}
-				characterBody.Position = LayerRegistry[getLayer_ID["Walkable"]].MapToLocal(new Vector2I(x + 1, y + 1));
-				break;
-			}
-		}
 		public override void _Process(double delta)
 		{
-			Vector2I CharPos = LayerRegistry[getLayer_ID["Collision"]].LocalToMap(characterBody.Position);
-			Vector2I CheckPos = PC.Move();
-			characterBody.Position += CheckPos;
+			if(Input.IsAnythingPressed()){
+				Vector2 move = PC.Move();
+				Vector2I validMove = (Vector2I)move + LayerRegistry[getLayer_ID["Walkable"]].LocalToMap(characterBody.Position);
+				if (map[validMove.X-1, validMove.Y-1, getLayer_ID["Collision"]] == getTS_ID["none"])
+				{
+					characterBody.Position = LayerRegistry[getLayer_ID["Walkable"]].MapToLocal(validMove);
+					Task.Delay(TimeSpan.FromMilliseconds(90)).Wait();
+				}
+			}
+
 		}
 	}
 }
+

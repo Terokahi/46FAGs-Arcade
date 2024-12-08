@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using Godot;
 
 namespace character
@@ -9,23 +8,24 @@ namespace character
     {
         int tileSize = 16;
         Vector2I Pos;
-        public Vector2I Move(){
-            
-            var inputs = new Dictionary<string, Vector2I>() {
-                {"move_right", Vector2I.Right},
-                {"move_left",Vector2I.Left},
-                {"move_down", Vector2I.Down},
-                {"move_up", Vector2I.Up}
-            };
-
-            foreach (string dir in inputs.Keys)
+        Dictionary<Key, Vector2> inputs = new Dictionary<Key, Vector2>(){
+            {Key.W, Vector2.Up},
+            {Key.S, Vector2.Down},
+            {Key.D, Vector2.Right},
+            {Key.A, Vector2.Left}
+        };
+     
+        public Vector2 Move()
+        {
+            Vector2 move = Vector2.Zero;
+            foreach (var key in inputs.Keys)
+            {
+                if (Input.IsKeyPressed(key))
                 {
-                    if (Input.IsActionPressed(dir))
-                    {
-                        Pos = inputs[dir];
-                    }
+                    move = inputs[key];
                 }
-            return Pos;
+            }
+            return move;
         }
     }
 }
